@@ -1,0 +1,29 @@
+name: 버그
+description: 재현 가능한 문제를 기록하고 해결합니다.
+title: ""
+labels:
+  - bug
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 문제
+      description: 어떤 문제가 발생했는지 적습니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 방법
+      value: |
+        1. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: 참고
+      value: |
+        - 
