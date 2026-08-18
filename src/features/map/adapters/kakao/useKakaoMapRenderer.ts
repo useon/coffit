@@ -4,10 +4,10 @@ import type { MapViewport } from "@/features/map/domain/types";
 import type {
   MapRenderer,
   MapRendererStatus,
-} from "@/features/map/ports/map-renderer";
+} from "@/features/map/ports/types";
 
 import { kakaoSdkUrl } from "./kakaoLoader";
-import type { KakaoMapInstance } from "./kakaoMap.types";
+import type { KakaoMapInstance } from "./types";
 
 export function useKakaoMapRenderer(): MapRenderer & {
   sdkUrl: string | undefined;

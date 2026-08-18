@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 import type { MapViewport } from "@/features/map/domain/types";
-import type { MapRenderer } from "@/features/map/ports/map-renderer";
+import type { MapRenderer } from "@/features/map/ports/types";
 
 import { MapStatusOverlay } from "./MapStatusOverlay";
 

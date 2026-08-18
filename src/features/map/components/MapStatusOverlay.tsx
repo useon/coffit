@@ -1,4 +1,4 @@
-import type { MapRendererStatus } from "@/features/map/ports/map-renderer";
+import type { MapRendererStatus } from "@/features/map/ports/types";
 
 export function MapStatusOverlay({ status }: { status: MapRendererStatus }) {
   if (status === "error") {
