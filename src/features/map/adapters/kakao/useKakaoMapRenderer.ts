@@ -40,22 +40,24 @@ export function useKakaoMapRenderer(): MapRenderer & {
     setStatus("ready");
   }, []);
 
+  const loadMapIfSdkReady = useCallback(() => {
+    if (window.kakao) {
+      window.kakao.maps.load(createMap);
+    }
+  }, [createMap]);
+
   const mount = useCallback(
     (container: HTMLElement, viewport: MapViewport) => {
       containerRef.current = container;
       viewportRef.current = viewport;
-
-      if (window.kakao) {
-        window.kakao.maps.load(createMap);
-      }
+      loadMapIfSdkReady();
     },
-    [createMap],
+    [loadMapIfSdkReady],
   );
 
   const onScriptReady = useCallback(() => {
-    if (!window.kakao) return;
-    window.kakao.maps.load(createMap);
-  }, [createMap]);
+    loadMapIfSdkReady();
+  }, [loadMapIfSdkReady]);
 
   const onScriptError = useCallback(() => {
     setStatus("error");
