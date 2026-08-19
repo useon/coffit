@@ -1,8 +1,6 @@
 export type KakaoLatLng = object;
 
-export type KakaoMapInstance = {
-  setCenter: (position: KakaoLatLng) => void;
-};
+export type KakaoMapInstance = object;
 
 export type KakaoMaps = {
   load: (callback: () => void) => void;
