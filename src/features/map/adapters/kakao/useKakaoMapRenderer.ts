@@ -5,6 +5,7 @@ import type {
   MapRenderer,
   MapRendererStatus,
 } from "@/features/map/ports/types";
+import type { GeoPoint } from "@/shared/geo/types";
 
 import { kakaoSdkUrl } from "./kakaoLoader";
 import type { KakaoMapInstance } from "./types";
@@ -55,6 +56,24 @@ export function useKakaoMapRenderer(): MapRenderer & {
     [loadMapIfSdkReady],
   );
 
+  const moveMapToPoint = useCallback((targetPoint: GeoPoint) => {
+    const viewport = viewportRef.current;
+    if (viewport) {
+      viewportRef.current = { ...viewport, center: targetPoint };
+    }
+
+    if (!window.kakao || !mapInstanceRef.current) {
+      return;
+    }
+
+    mapInstanceRef.current.setCenter(
+      new window.kakao.maps.LatLng(
+        targetPoint.latitude,
+        targetPoint.longitude,
+      ),
+    );
+  }, []);
+
   const onScriptReady = useCallback(() => {
     loadMapIfSdkReady();
   }, [loadMapIfSdkReady]);
@@ -63,5 +82,12 @@ export function useKakaoMapRenderer(): MapRenderer & {
     setStatus("error");
   }, []);
 
-  return { status, mount, sdkUrl: kakaoSdkUrl, onScriptReady, onScriptError };
+  return {
+    status,
+    mount,
+    moveMapToPoint,
+    sdkUrl: kakaoSdkUrl,
+    onScriptReady,
+    onScriptError,
+  };
 }
