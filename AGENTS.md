@@ -33,6 +33,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## 브랜치 규칙
 
 브랜치는 작업 성격에 맞는 type과 GitHub Issue 번호를 포함해 생성한다.
+새 작업 브랜치는 `release` 브랜치를 기준으로 생성한다.
 
 형식:
 
@@ -62,10 +63,7 @@ type은 작업 성격에 따라 선택한다.
 
 ## Issue 작성 규칙
 
-- Issue 제목은 작업 결과가 드러나도록 작성한다.
-- Issue 본문에는 목표, 작업 목록, 완료 조건, 참고 자료를 포함한다.
-- 하나의 Issue는 하나의 PR로 해결 가능한 크기를 권장한다.
-- PRD 또는 사용자 흐름의 세부 설명은 Notion 링크로 연결하고, Issue에는 실제 구현에 필요한 요약만 남긴다.
+- AI가 Issue 생성을 요청받으면 `.github/AI_ISSUE_GUIDE.md`의 상세 규칙을 따른다.
 
 ## PR 작성 규칙
 
