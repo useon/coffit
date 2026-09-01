@@ -5,8 +5,6 @@ import { useEffect, useRef } from "react";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRenderer } from "@/features/map/ports/types";
 
-import { MapStatusOverlay } from "./MapStatusOverlay";
-
 export function MapView({
   renderer,
   viewport,
@@ -26,7 +24,6 @@ export function MapView({
   return (
     <div className="absolute inset-0">
       <div ref={containerRef} className="absolute inset-0" />
-      <MapStatusOverlay status={renderer.status} />
     </div>
   );
 }

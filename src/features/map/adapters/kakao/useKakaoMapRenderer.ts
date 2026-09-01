@@ -5,9 +5,10 @@ import type {
   MapRenderer,
   MapRendererStatus,
 } from "@/features/map/ports/types";
+import type { GeoPoint } from "@/shared/geo/types";
 
 import { kakaoSdkUrl } from "./kakaoLoader";
-import type { KakaoMapInstance } from "./types";
+import type { KakaoMapInstance, KakaoMarkerInstance } from "./types";
 
 export function useKakaoMapRenderer(): MapRenderer & {
   sdkUrl: string | undefined;
@@ -15,6 +16,7 @@ export function useKakaoMapRenderer(): MapRenderer & {
   onScriptError: () => void;
 } {
   const mapInstanceRef = useRef<KakaoMapInstance | null>(null);
+  const currentLocationMarkerRef = useRef<KakaoMarkerInstance | null>(null);
   const containerRef = useRef<HTMLElement | null>(null);
   const viewportRef = useRef<MapViewport | null>(null);
   const [status, setStatus] = useState<MapRendererStatus>(
@@ -55,6 +57,47 @@ export function useKakaoMapRenderer(): MapRenderer & {
     [loadMapIfSdkReady],
   );
 
+  const moveMapToPoint = useCallback((targetPoint: GeoPoint) => {
+    const viewport = viewportRef.current;
+    if (viewport) {
+      viewportRef.current = { ...viewport, center: targetPoint };
+    }
+
+    if (!window.kakao || !mapInstanceRef.current) {
+      return;
+    }
+
+    mapInstanceRef.current.setCenter(
+      new window.kakao.maps.LatLng(
+        targetPoint.latitude,
+        targetPoint.longitude,
+      ),
+    );
+  }, []);
+
+  const showCurrentLocationMarker = useCallback((point: GeoPoint) => {
+    const map = mapInstanceRef.current;
+    if (!window.kakao || !map) {
+      return;
+    }
+
+    const position = new window.kakao.maps.LatLng(
+      point.latitude,
+      point.longitude,
+    );
+
+    if (currentLocationMarkerRef.current) {
+      currentLocationMarkerRef.current.setPosition(position);
+      currentLocationMarkerRef.current.setMap(map);
+      return;
+    }
+
+    currentLocationMarkerRef.current = new window.kakao.maps.Marker({
+      map,
+      position,
+    });
+  }, []);
+
   const onScriptReady = useCallback(() => {
     loadMapIfSdkReady();
   }, [loadMapIfSdkReady]);
@@ -63,5 +106,13 @@ export function useKakaoMapRenderer(): MapRenderer & {
     setStatus("error");
   }, []);
 
-  return { status, mount, sdkUrl: kakaoSdkUrl, onScriptReady, onScriptError };
+  return {
+    status,
+    mount,
+    moveMapToPoint,
+    showCurrentLocationMarker,
+    sdkUrl: kakaoSdkUrl,
+    onScriptReady,
+    onScriptError,
+  };
 }
