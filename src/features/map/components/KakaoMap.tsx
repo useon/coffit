@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import Script from "next/script";
 
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
 import type { MapViewport } from "@/features/map/domain/types";
+import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
 
 import { MapView } from "./MapView";
 
@@ -17,6 +19,16 @@ const DEFAULT_VIEWPORT: MapViewport = {
 
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
+  const { moveMapToPoint } = renderer;
+  const { point: currentLocationPoint } = useCurrentLocation();
+
+  useEffect(() => {
+    if (!currentLocationPoint) {
+      return;
+    }
+
+    moveMapToPoint(currentLocationPoint);
+  }, [currentLocationPoint, moveMapToPoint]);
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-slate-100 text-slate-950">
