@@ -21,7 +21,7 @@ const DEFAULT_VIEWPORT: MapViewport = {
 
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
-  const { moveMapToPoint } = renderer;
+  const { moveMapToPoint, showCurrentLocationMarker } = renderer;
   const {
     point: currentLocationPoint,
     error: currentLocationError,
@@ -37,7 +37,8 @@ export function KakaoMap() {
     }
 
     moveMapToPoint(currentLocationPoint);
-  }, [currentLocationPoint, moveMapToPoint]);
+    showCurrentLocationMarker(currentLocationPoint);
+  }, [currentLocationPoint, moveMapToPoint, showCurrentLocationMarker]);
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-slate-100 text-slate-950">
