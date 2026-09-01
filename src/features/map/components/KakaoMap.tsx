@@ -5,7 +5,9 @@ import Script from "next/script";
 
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
 import type { MapViewport } from "@/features/map/domain/types";
+import type { MapRendererStatus } from "@/features/map/ports/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
+import { Toast } from "@/shared/ui/Toast";
 
 import { MapView } from "./MapView";
 
@@ -20,7 +22,14 @@ const DEFAULT_VIEWPORT: MapViewport = {
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
   const { moveMapToPoint } = renderer;
-  const { point: currentLocationPoint } = useCurrentLocation();
+  const {
+    point: currentLocationPoint,
+    error: currentLocationError,
+  } = useCurrentLocation();
+  const mapNotice = getMapNotice({
+    mapStatus: renderer.status,
+    currentLocationError,
+  });
 
   useEffect(() => {
     if (!currentLocationPoint) {
@@ -42,6 +51,13 @@ export function KakaoMap() {
       ) : null}
 
       <MapView renderer={renderer} viewport={DEFAULT_VIEWPORT} />
+      {mapNotice ? (
+        <Toast
+          key={mapNotice.message}
+          message={mapNotice.message}
+          durationMs={mapNotice.durationMs}
+        />
+      ) : null}
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
         <div className="pointer-events-auto mx-auto max-w-3xl">
@@ -58,4 +74,42 @@ export function KakaoMap() {
       </div>
     </main>
   );
+}
+
+function getMapNotice({
+  mapStatus,
+  currentLocationError,
+}: {
+  mapStatus: MapRendererStatus;
+  currentLocationError: GeolocationPositionError | null;
+}) {
+  if (mapStatus === "error") {
+    return {
+      message: "지도를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.",
+      durationMs: null,
+    };
+  }
+
+  if (mapStatus !== "ready") {
+    return null;
+  }
+
+  if (
+    currentLocationError &&
+    currentLocationError.code === currentLocationError.PERMISSION_DENIED
+  ) {
+    return {
+      message: "위치 권한이 차단되어 강남역 기준으로 표시합니다.",
+      durationMs: 3000,
+    };
+  }
+
+  if (currentLocationError) {
+    return {
+      message: "현재 위치를 가져오지 못해 강남역 기준으로 표시합니다.",
+      durationMs: 3000,
+    };
+  }
+
+  return null;
 }
