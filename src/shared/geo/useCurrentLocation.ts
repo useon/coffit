@@ -8,24 +8,17 @@ export type CurrentLocationState = {
   isLoading: boolean;
   point: GeoPoint | null;
   error: GeolocationPositionError | null;
-  isUnsupported: boolean;
 };
 
 export function useCurrentLocation(): CurrentLocationState {
-  const [location, setLocation] = useState<CurrentLocationState>(() => {
-    const isSupported =
-      typeof navigator !== "undefined" && "geolocation" in navigator;
-
-    return {
-      isLoading: isSupported,
-      point: null,
-      error: null,
-      isUnsupported: !isSupported,
-    };
+  const [location, setLocation] = useState<CurrentLocationState>({
+    isLoading: true,
+    point: null,
+    error: null,
   });
 
   useEffect(() => {
-    if (location.isUnsupported) {
+    if (!("geolocation" in navigator)) {
       return;
     }
 
@@ -38,7 +31,6 @@ export function useCurrentLocation(): CurrentLocationState {
             longitude: position.coords.longitude,
           },
           error: null,
-          isUnsupported: false,
         });
       },
       (error) => {
@@ -46,16 +38,15 @@ export function useCurrentLocation(): CurrentLocationState {
           isLoading: false,
           point: null,
           error,
-          isUnsupported: false,
         });
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 60_000,
-        timeout: 10_000,
+        maximumAge: 60000,
+        timeout: 10000,
       },
     );
-  }, [location.isUnsupported]);
+  }, []);
 
   return location;
 }
