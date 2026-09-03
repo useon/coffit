@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Script from "next/script";
 
 import { useKakaoCafeSearch } from "@/features/map/adapters/kakao/useKakaoCafeSearch";
+import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/useKakaoCurrentLocationMarker";
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
@@ -23,7 +24,10 @@ const DEFAULT_VIEWPORT: MapViewport = {
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
   const { searchNearbyCafes } = useKakaoCafeSearch();
-  const { moveMapToPoint, showCurrentLocationMarker } = renderer;
+  const { showCurrentLocationMarker } = useKakaoCurrentLocationMarker(
+    renderer.mapInstance,
+  );
+  const { moveMapToPoint } = renderer;
   const {
     point: currentLocationPoint,
     error: currentLocationError,

@@ -13,5 +13,4 @@ export interface MapRenderer {
   status: MapRendererStatus;
   mount: (container: HTMLElement, viewport: MapViewport) => void;
   moveMapToPoint: (targetPoint: GeoPoint) => void;
-  showCurrentLocationMarker: (point: GeoPoint) => void;
 }
