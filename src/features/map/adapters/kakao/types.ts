@@ -1,12 +1,54 @@
-export type KakaoLatLng = object;
+export const KAKAO_PLACE_SEARCH_STATUS = {
+  OK: "OK",
+  ZERO_RESULT: "ZERO_RESULT",
+  ERROR: "ERROR",
+} as const;
+
+export type KakaoPlaceSearchStatus =
+  (typeof KAKAO_PLACE_SEARCH_STATUS)[keyof typeof KAKAO_PLACE_SEARCH_STATUS];
+
+export type KakaoLatLng = {
+  getLat: () => number;
+  getLng: () => number;
+};
 
 export type KakaoMapInstance = {
+  getCenter: () => KakaoLatLng;
   setCenter: (center: KakaoLatLng) => void;
 };
 
 export type KakaoMarkerInstance = {
   setMap: (map: KakaoMapInstance | null) => void;
   setPosition: (position: KakaoLatLng) => void;
+};
+
+export type KakaoPlaceSearchResult = {
+  address_name: string;
+  category_group_code: string;
+  category_group_name: string;
+  category_name: string;
+  distance: string;
+  id: string;
+  phone: string;
+  place_name: string;
+  place_url: string;
+  road_address_name: string;
+  x: string;
+  y: string;
+};
+
+export type KakaoPlacesInstance = {
+  categorySearch: (
+    categoryCode: string,
+    callback: (
+      results: KakaoPlaceSearchResult[],
+      status: KakaoPlaceSearchStatus,
+    ) => void,
+    options: {
+      location: KakaoLatLng;
+      radius?: number;
+    },
+  ) => void;
 };
 
 export type KakaoMaps = {
@@ -20,6 +62,10 @@ export type KakaoMaps = {
     map: KakaoMapInstance;
     position: KakaoLatLng;
   }) => KakaoMarkerInstance;
+  services: {
+    Places: new (map?: KakaoMapInstance) => KakaoPlacesInstance;
+    Status: typeof KAKAO_PLACE_SEARCH_STATUS;
+  };
 };
 
 declare global {
