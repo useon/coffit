@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import Script from "next/script";
 
+import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
+import { useKakaoCafeSearch } from "@/features/map/adapters/kakao/useKakaoCafeSearch";
+import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/useKakaoCurrentLocationMarker";
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
+import { filterLowCostCoffeeStores } from "@/features/map/domain/filterLowCostCoffeeStores";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
@@ -21,7 +25,19 @@ const DEFAULT_VIEWPORT: MapViewport = {
 
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
-  const { moveMapToPoint, showCurrentLocationMarker } = renderer;
+  const { cafeSearch, searchNearbyCafes } = useKakaoCafeSearch();
+  const lowCostCoffeeStores = useMemo(
+    () => filterLowCostCoffeeStores(cafeSearch.places),
+    [cafeSearch.places],
+  );
+  const { showCurrentLocationMarker } = useKakaoCurrentLocationMarker(
+    renderer.mapInstance,
+  );
+  const { moveMapToPoint } = renderer;
+  useKakaoCafeMarkers({
+    mapInstance: renderer.mapInstance,
+    places: lowCostCoffeeStores,
+  });
   const {
     point: currentLocationPoint,
     error: currentLocationError,
@@ -32,13 +48,23 @@ export function KakaoMap() {
   });
 
   useEffect(() => {
-    if (!currentLocationPoint) {
+    if (renderer.status !== "ready") {
       return;
     }
 
-    moveMapToPoint(currentLocationPoint);
-    showCurrentLocationMarker(currentLocationPoint);
-  }, [currentLocationPoint, moveMapToPoint, showCurrentLocationMarker]);
+    if (currentLocationPoint) {
+      moveMapToPoint(currentLocationPoint);
+      showCurrentLocationMarker(currentLocationPoint);
+    }
+
+    searchNearbyCafes(currentLocationPoint ?? DEFAULT_VIEWPORT.center);
+  }, [
+    currentLocationPoint,
+    moveMapToPoint,
+    renderer.status,
+    searchNearbyCafes,
+    showCurrentLocationMarker,
+  ]);
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-slate-100 text-slate-950">
