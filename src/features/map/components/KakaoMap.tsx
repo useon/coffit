@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import Script from "next/script";
 
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
 import { useKakaoCafeSearch } from "@/features/map/adapters/kakao/useKakaoCafeSearch";
 import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/useKakaoCurrentLocationMarker";
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
+import { filterLowCostCoffeeStores } from "@/features/map/domain/filterLowCostCoffeeStores";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
@@ -25,13 +26,17 @@ const DEFAULT_VIEWPORT: MapViewport = {
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
   const { cafeSearch, searchNearbyCafes } = useKakaoCafeSearch();
+  const lowCostCoffeeStores = useMemo(
+    () => filterLowCostCoffeeStores(cafeSearch.places),
+    [cafeSearch.places],
+  );
   const { showCurrentLocationMarker } = useKakaoCurrentLocationMarker(
     renderer.mapInstance,
   );
   const { moveMapToPoint } = renderer;
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
-    places: cafeSearch.places,
+    places: lowCostCoffeeStores,
   });
   const {
     point: currentLocationPoint,
