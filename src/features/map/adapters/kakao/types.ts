@@ -8,8 +8,10 @@ export type KakaoPlaceSearchStatus =
   (typeof KAKAO_PLACE_SEARCH_STATUS)[keyof typeof KAKAO_PLACE_SEARCH_STATUS];
 
 export type KakaoLatLng = {
+  equals: (latlng: KakaoLatLng) => boolean;
   getLat: () => number;
   getLng: () => number;
+  toString: () => string;
 };
 
 export type KakaoMapInstance = {
@@ -20,6 +22,29 @@ export type KakaoMapInstance = {
 export type KakaoMarkerInstance = {
   setMap: (map: KakaoMapInstance | null) => void;
   setPosition: (position: KakaoLatLng) => void;
+};
+
+export type KakaoPoint = {
+  equals: (point: KakaoPoint) => boolean;
+  toString: () => string;
+};
+
+export type KakaoSize = {
+  equals: (size: KakaoSize) => boolean;
+  toString: () => string;
+};
+
+export type KakaoMarkerImageInstance = {
+  __markerImageBrand: "KakaoMarkerImage";
+};
+
+export type KakaoMarkerImageOptions = {
+  alt?: string;
+  coords?: string;
+  offset?: KakaoPoint;
+  shape?: string;
+  spriteOrigin?: KakaoPoint;
+  spriteSize?: KakaoSize;
 };
 
 export type KakaoPlaceSearchResult = {
@@ -61,7 +86,15 @@ export type KakaoMaps = {
   Marker: new (options: {
     map: KakaoMapInstance;
     position: KakaoLatLng;
+    image?: KakaoMarkerImageInstance;
   }) => KakaoMarkerInstance;
+  MarkerImage: new (
+    imageUrl: string,
+    imageSize: KakaoSize,
+    options?: KakaoMarkerImageOptions,
+  ) => KakaoMarkerImageInstance;
+  Point: new (x: number, y: number) => KakaoPoint;
+  Size: new (width: number, height: number) => KakaoSize;
   services: {
     Places: new (map?: KakaoMapInstance) => KakaoPlacesInstance;
     Status: typeof KAKAO_PLACE_SEARCH_STATUS;
