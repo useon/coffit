@@ -1,4 +1,4 @@
-import type { KakaoMarkerImageInstance } from "./types";
+import type { KakaoMarkerImageInstance, KakaoSdk } from "./types";
 
 const CAFE_MARKER_IMAGE_URL =
   "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/category.png";
@@ -6,7 +6,7 @@ const CAFE_MARKER_IMAGE_URL =
 export function createCafeMarkerImage({
   kakao,
 }: {
-  kakao: NonNullable<Window["kakao"]>;
+  kakao: KakaoSdk;
 }): KakaoMarkerImageInstance {
   return new kakao.maps.MarkerImage(
     CAFE_MARKER_IMAGE_URL,

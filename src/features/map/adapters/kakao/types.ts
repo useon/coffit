@@ -7,6 +7,8 @@ export const KAKAO_PLACE_SEARCH_STATUS = {
 export type KakaoPlaceSearchStatus =
   (typeof KAKAO_PLACE_SEARCH_STATUS)[keyof typeof KAKAO_PLACE_SEARCH_STATUS];
 
+export type KakaoSdk = NonNullable<Window["kakao"]>;
+
 export type KakaoLatLng = {
   equals: (latlng: KakaoLatLng) => boolean;
   getLat: () => number;
@@ -68,12 +70,26 @@ export type KakaoPlacesInstance = {
     callback: (
       results: KakaoPlaceSearchResult[],
       status: KakaoPlaceSearchStatus,
+      pagination: KakaoPagination,
     ) => void,
     options: {
       location: KakaoLatLng;
       radius?: number;
+      size?: number;
     },
   ) => void;
+};
+
+export type KakaoPagination = {
+  current: number;
+  first: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  last: number;
+  nextPage: () => void;
+  perPage: number;
+  prevPage: () => void;
+  totalCount: number;
 };
 
 export type KakaoMaps = {

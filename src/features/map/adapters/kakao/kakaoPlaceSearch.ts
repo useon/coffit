@@ -1,9 +1,16 @@
 import type { CafePlace } from "@/features/map/domain/types";
 import type { GeoPoint } from "@/shared/geo/types";
 
-import type { KakaoPlaceSearchResult, KakaoPlaceSearchStatus } from "./types";
+import type {
+  KakaoPagination,
+  KakaoPlaceSearchResult,
+  KakaoPlaceSearchStatus,
+  KakaoSdk,
+} from "./types";
 
 export const CAFE_CATEGORY_CODE = "CE7";
+const KAKAO_PLACE_SEARCH_PAGE_SIZE = 15;
+const KAKAO_PLACE_SEARCH_MAX_PAGE_COUNT = 3;
 
 export type KakaoPlaceSearchSuccess = {
   status: "success";
@@ -27,7 +34,7 @@ export async function searchKakaoCafesByMapCenter({
   kakao,
   center,
 }: {
-  kakao: NonNullable<Window["kakao"]>;
+  kakao: KakaoSdk;
   center: GeoPoint;
 }): Promise<KakaoPlaceSearchResultState> {
   const result = await searchKakaoCategoryPlaces({
@@ -44,7 +51,7 @@ function searchKakaoCategoryPlaces({
   center,
   categoryCode,
 }: {
-  kakao: NonNullable<Window["kakao"]>;
+  kakao: KakaoSdk;
   center: GeoPoint;
   categoryCode: string;
 }): Promise<{
@@ -54,16 +61,38 @@ function searchKakaoCategoryPlaces({
   const places = new kakao.maps.services.Places();
 
   return new Promise((resolve) => {
+    const placeResults: KakaoPlaceSearchResult[] = [];
+
     places.categorySearch(
       categoryCode,
-      (results, status) => {
-        resolve({ places: results, status });
+      (results, status, pagination) => {
+        if (status !== kakao.maps.services.Status.OK) {
+          resolve({ places: [], status });
+          return;
+        }
+
+        placeResults.push(...results);
+
+        if (shouldRequestNextPage(pagination)) {
+          pagination.nextPage();
+          return;
+        }
+
+        resolve({ places: placeResults, status });
       },
       {
         location: new kakao.maps.LatLng(center.latitude, center.longitude),
+        size: KAKAO_PLACE_SEARCH_PAGE_SIZE,
       },
     );
   });
+}
+
+function shouldRequestNextPage(pagination: KakaoPagination) {
+  return (
+    pagination.hasNextPage &&
+    pagination.current < KAKAO_PLACE_SEARCH_MAX_PAGE_COUNT
+  );
 }
 
 function toKakaoPlaceSearchResultState({
@@ -73,7 +102,7 @@ function toKakaoPlaceSearchResultState({
 }: {
   places: KakaoPlaceSearchResult[];
   status: KakaoPlaceSearchStatus;
-  kakao: NonNullable<Window["kakao"]>;
+  kakao: KakaoSdk;
 }): KakaoPlaceSearchResultState {
   if (status === kakao.maps.services.Status.OK) {
     return {
