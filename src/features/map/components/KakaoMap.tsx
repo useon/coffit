@@ -11,8 +11,10 @@ import { filterLowCostCoffeeStores } from "@/features/map/domain/filterLowCostCo
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
+import { BottomSheet } from "@/shared/ui/BottomSheet";
 import { Toast } from "@/shared/ui/Toast";
 
+import { CafeSearchResultList } from "./CafeSearchResultList";
 import { MapView } from "./MapView";
 
 const DEFAULT_VIEWPORT: MapViewport = {
@@ -29,6 +31,14 @@ export function KakaoMap() {
   const lowCostCoffeeStores = useMemo(
     () => filterLowCostCoffeeStores(cafeSearch.places),
     [cafeSearch.places],
+  );
+  const sortedLowCostCoffeeStores = useMemo(
+    () =>
+      [...lowCostCoffeeStores].sort(
+        (previousPlace, nextPlace) =>
+          previousPlace.distanceMeters - nextPlace.distanceMeters,
+      ),
+    [lowCostCoffeeStores],
   );
   const { showCurrentLocationMarker } = useKakaoCurrentLocationMarker(
     renderer.mapInstance,
@@ -85,6 +95,9 @@ export function KakaoMap() {
           durationMs={mapNotice.durationMs}
         />
       ) : null}
+      <BottomSheet open={sortedLowCostCoffeeStores.length > 0}>
+        <CafeSearchResultList places={sortedLowCostCoffeeStores} />
+      </BottomSheet>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
         <div className="pointer-events-auto mx-auto max-w-3xl">

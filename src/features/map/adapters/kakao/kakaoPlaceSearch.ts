@@ -128,6 +128,7 @@ function mapKakaoPlaceToCafePlace(place: KakaoPlaceSearchResult): CafePlace {
   return {
     id: place.id,
     name: place.place_name,
+    distanceMeters: Number(place.distance),
     position: {
       latitude: Number(place.y),
       longitude: Number(place.x),
