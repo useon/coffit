@@ -18,7 +18,7 @@ export function CafeSearchResultList({ places }: CafeSearchResultListProps) {
                 {place.roadAddress || place.address}
               </p>
             </div>
-            <span className="shrink-0 text-sm font-bold text-emerald-700">
+            <span className="shrink-0 text-sm font-bold text-coffit-brand">
               {formatDistance(place.distanceMeters)}
             </span>
           </div>
