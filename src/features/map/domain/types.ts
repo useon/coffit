@@ -8,6 +8,7 @@ export type MapViewport = {
 export type CafePlace = {
   id: string;
   name: string;
+  distanceMeters: number;
   position: GeoPoint;
   address: string;
   roadAddress: string;
