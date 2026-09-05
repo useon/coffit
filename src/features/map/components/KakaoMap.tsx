@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Script from "next/script";
 
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
@@ -8,10 +8,16 @@ import { useKakaoCafeSearch } from "@/features/map/adapters/kakao/useKakaoCafeSe
 import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/useKakaoCurrentLocationMarker";
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
 import { filterLowCostCoffeeStores } from "@/features/map/domain/filterLowCostCoffeeStores";
+import {
+  LOW_COST_COFFEE_BRANDS,
+  LOW_COST_COFFEE_BRAND_IDS,
+} from "@/features/map/domain/lowCostCoffeeBrands";
+import type { LowCostCoffeeBrandId } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
 import { BottomSheet } from "@/shared/ui/BottomSheet";
+import { Chips } from "@/shared/ui/Chips";
 import { Toast } from "@/shared/ui/Toast";
 
 import { CafeSearchResultList } from "./CafeSearchResultList";
@@ -27,6 +33,9 @@ const DEFAULT_VIEWPORT: MapViewport = {
 
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
+  const [selectedBrandIds, setSelectedBrandIds] = useState<
+    LowCostCoffeeBrandId[]
+  >(() => [...LOW_COST_COFFEE_BRAND_IDS]);
   const { cafeSearch, searchNearbyCafes } = useKakaoCafeSearch();
   const lowCostCoffeeStores = useMemo(
     () => filterLowCostCoffeeStores(cafeSearch.places),
@@ -100,9 +109,9 @@ export function KakaoMap() {
       </BottomSheet>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
-        <div className="pointer-events-auto mx-auto max-w-3xl">
+        <div className="pointer-events-auto mx-auto flex max-w-3xl flex-col gap-3">
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-lg shadow-slate-900/10 backdrop-blur">
-            <span className="text-lg font-bold tracking-normal text-emerald-700">
+            <span className="text-lg font-bold tracking-normal text-coffit-brand">
               Coffit
             </span>
             <div className="h-5 w-px bg-slate-200" />
@@ -110,6 +119,13 @@ export function KakaoMap() {
               주변 저가 프랜차이즈 카페
             </p>
           </div>
+          <Chips
+            ariaLabel="브랜드 필터"
+            items={LOW_COST_COFFEE_BRANDS}
+            selectedValues={selectedBrandIds}
+            onSelectedValuesChange={setSelectedBrandIds}
+            selectAllLabel="전체"
+          />
         </div>
       </div>
     </main>
