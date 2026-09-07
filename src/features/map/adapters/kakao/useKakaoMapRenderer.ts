@@ -20,9 +20,32 @@ export function useKakaoMapRenderer(): MapRenderer & {
   const containerRef = useRef<HTMLElement | null>(null);
   const viewportRef = useRef<MapViewport | null>(null);
   const [mapInstance, setMapInstance] = useState<KakaoMapInstance | null>(null);
+  const [center, setCenter] = useState<GeoPoint | null>(null);
   const [status, setStatus] = useState<MapRendererStatus>(
     kakaoSdkUrl ? "loading" : "error",
   );
+
+  const getCenterPoint = useCallback(() => {
+    const mapInstance = mapInstanceRef.current;
+    if (!mapInstance) {
+      return null;
+    }
+
+    const center = mapInstance.getCenter();
+    return {
+      latitude: center.getLat(),
+      longitude: center.getLng(),
+    };
+  }, []);
+
+  const notifyViewportChange = useCallback(() => {
+    const center = getCenterPoint();
+    if (!center) {
+      return;
+    }
+
+    setCenter(center);
+  }, [getCenterPoint]);
 
   const createMap = useCallback(() => {
     const container = containerRef.current;
@@ -40,10 +63,16 @@ export function useKakaoMapRenderer(): MapRenderer & {
       center,
       level: viewport.zoomLevel,
     });
+    window.kakao.maps.event.addListener(
+      nextMapInstance,
+      "dragend",
+      notifyViewportChange,
+    );
     mapInstanceRef.current = nextMapInstance;
     setMapInstance(nextMapInstance);
+    setCenter(viewport.center);
     setStatus("ready");
-  }, []);
+  }, [notifyViewportChange]);
 
   const loadMapIfSdkReady = useCallback(() => {
     if (window.kakao) {
@@ -70,6 +99,7 @@ export function useKakaoMapRenderer(): MapRenderer & {
       return;
     }
 
+    setCenter(targetPoint);
     mapInstanceRef.current.setCenter(
       new window.kakao.maps.LatLng(
         targetPoint.latitude,
@@ -88,9 +118,11 @@ export function useKakaoMapRenderer(): MapRenderer & {
 
   return {
     status,
+    center,
     mapInstance,
     mount,
     moveMapToPoint,
+    getCenterPoint,
     sdkUrl: kakaoSdkUrl,
     onScriptReady,
     onScriptError,

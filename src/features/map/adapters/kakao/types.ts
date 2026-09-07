@@ -101,15 +101,26 @@ export type KakaoPagination = {
   totalCount: number;
 };
 
+export type KakaoEventAddListener = {
+  (
+    target: KakaoMarkerInstance,
+    type: "click",
+    handler: () => void,
+  ): void;
+  (
+    target: KakaoMapInstance,
+    type: "dragend",
+    handler: () => void,
+  ): void;
+};
+
+export type KakaoEvent = {
+  addListener: KakaoEventAddListener;
+};
+
 export type KakaoMaps = {
   load: (callback: () => void) => void;
-  event: {
-    addListener: (
-      target: KakaoMarkerInstance,
-      type: "click",
-      handler: () => void,
-    ) => void;
-  };
+  event: KakaoEvent;
   LatLng: new (latitude: number, longitude: number) => KakaoLatLng;
   Map: new (
     container: HTMLElement,

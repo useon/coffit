@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { RotateCw } from "lucide-react";
 import Script from "next/script";
 
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
@@ -23,6 +24,7 @@ import { CafeStoreDetail } from "./CafeStoreDetail";
 import { MapView } from "./MapView";
 import { useBrandFilterSearchParams } from "./useBrandFilterSearchParams";
 import { useStoreBottomSheet } from "./useStoreBottomSheet";
+import { useMapAreaSearch } from "./useMapAreaSearch";
 
 const DEFAULT_VIEWPORT: MapViewport = {
   center: {
@@ -70,6 +72,14 @@ export function KakaoMap() {
     },
     [moveMapToPoint, showCurrentLocationMarker],
   );
+  const { isSearchPending, isSearching, searchCurrentArea } =
+    useMapAreaSearch({
+      currentCenter: renderer.center,
+      searchedCenter: cafeSearch.center,
+      searchStatus: cafeSearch.status,
+      getCenterPoint: renderer.getCenterPoint,
+      searchNearbyCafes,
+    });
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
     places: filteredCafePlaces,
@@ -99,7 +109,8 @@ export function KakaoMap() {
       focusCurrentLocation(currentLocationPoint);
     }
 
-    searchNearbyCafes(currentLocationPoint ?? DEFAULT_VIEWPORT.center);
+    const initialSearchCenter = currentLocationPoint ?? DEFAULT_VIEWPORT.center;
+    searchNearbyCafes(initialSearchCenter);
   }, [
     currentLocationPoint,
     focusCurrentLocation,
@@ -107,7 +118,6 @@ export function KakaoMap() {
     renderer.status,
     searchNearbyCafes,
   ]);
-
   return (
     <main className="relative min-h-dvh overflow-hidden bg-slate-100 text-slate-950">
       {renderer.sdkUrl ? (
@@ -166,6 +176,19 @@ export function KakaoMap() {
           />
         </div>
       </div>
+      {isSearchPending ? (
+        <div className="pointer-events-none absolute inset-x-0 top-32 z-10 flex justify-center px-4 sm:top-36">
+          <button
+            type="button"
+            className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-coffit-brand px-4 py-2 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isSearching}
+            onClick={searchCurrentArea}
+          >
+            <RotateCw aria-hidden="true" size={16} strokeWidth={2.5} />
+            현 위치에서 검색
+          </button>
+        </div>
+      ) : null}
     </main>
   );
 }
