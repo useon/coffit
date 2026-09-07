@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import Script from "next/script";
 
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
@@ -12,6 +12,7 @@ import { LOW_COST_COFFEE_BRANDS } from "@/features/map/domain/lowCostCoffeeBrand
 import type { LowCostCoffeeBrandId } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
+import type { GeoPoint } from "@/shared/geo/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
 import { BottomSheet } from "@/shared/ui/BottomSheet";
 import { Chips } from "@/shared/ui/Chips";
@@ -32,6 +33,7 @@ const DEFAULT_VIEWPORT: MapViewport = {
 };
 
 export function KakaoMap() {
+  const hasSearchedInitialAreaRef = useRef(false);
   const renderer = useKakaoMapRenderer();
   const {
     selectedBrandIds,
@@ -61,12 +63,20 @@ export function KakaoMap() {
     renderer.mapInstance,
   );
   const { moveMapToPoint } = renderer;
+  const focusCurrentLocation = useCallback(
+    (point: GeoPoint) => {
+      moveMapToPoint(point);
+      showCurrentLocationMarker(point);
+    },
+    [moveMapToPoint, showCurrentLocationMarker],
+  );
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
     places: filteredCafePlaces,
     onPlaceSelect: storeBottomSheet.selectStore,
   });
   const {
+    isLoading: isCurrentLocationLoading,
     point: currentLocationPoint,
     error: currentLocationError,
   } = useCurrentLocation();
@@ -74,24 +84,28 @@ export function KakaoMap() {
     mapStatus: renderer.status,
     currentLocationError,
   });
-
   useEffect(() => {
-    if (renderer.status !== "ready") {
+    if (
+      renderer.status !== "ready" ||
+      isCurrentLocationLoading ||
+      hasSearchedInitialAreaRef.current
+    ) {
       return;
     }
 
+    hasSearchedInitialAreaRef.current = true;
+
     if (currentLocationPoint) {
-      moveMapToPoint(currentLocationPoint);
-      showCurrentLocationMarker(currentLocationPoint);
+      focusCurrentLocation(currentLocationPoint);
     }
 
     searchNearbyCafes(currentLocationPoint ?? DEFAULT_VIEWPORT.center);
   }, [
     currentLocationPoint,
-    moveMapToPoint,
+    focusCurrentLocation,
+    isCurrentLocationLoading,
     renderer.status,
     searchNearbyCafes,
-    showCurrentLocationMarker,
   ]);
 
   return (
