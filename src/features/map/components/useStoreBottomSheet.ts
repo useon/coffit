@@ -11,6 +11,7 @@ export function useStoreBottomSheet(places: CafePlace[]) {
   const [mode, setMode] = useState<StoreBottomSheetMode>("list");
   const selectedStore =
     places.find((place) => place.id === selectedStoreId) ?? null;
+  const visibleMode = selectedStore ? mode : "list";
 
   const selectStore = useCallback((placeId: string) => {
     setSelectedStoreId(placeId);
@@ -23,7 +24,7 @@ export function useStoreBottomSheet(places: CafePlace[]) {
   }, []);
 
   return {
-    mode,
+    mode: visibleMode,
     selectedStore,
     selectStore,
     showStoreList,
