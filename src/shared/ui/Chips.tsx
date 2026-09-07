@@ -1,27 +1,35 @@
 "use client";
 
-type ChipItem<Value extends string> = {
-  id: Value;
+type ChipItem<ChipId extends string> = {
+  id: ChipId;
   name: string;
 };
 
-type ChipsProps<Value extends string> = {
+type ChipsProps<ChipId extends string> = {
   ariaLabel: string;
-  items: readonly ChipItem<Value>[];
-  selectedValues: Value[];
-  onSelectedValuesChange: (values: Value[]) => void;
+  items: readonly ChipItem<ChipId>[];
+  selectedValues: ChipId[];
+  onSelectedValuesChange: (values: ChipId[]) => void;
   selectAllLabel?: string;
 };
 
-export function Chips<Value extends string>({
+export function Chips<ChipId extends string>({
   ariaLabel,
   items,
   selectedValues,
   onSelectedValuesChange,
   selectAllLabel,
-}: ChipsProps<Value>) {
+}: ChipsProps<ChipId>) {
   const allValues = items.map(({ id }) => id);
-  const isAllSelected = selectedValues.length === allValues.length;
+  const isSelectAllActive = selectedValues.length === allValues.length;
+  const toggleAll = () => {
+    onSelectedValuesChange(isSelectAllActive ? [] : allValues);
+  };
+  const toggleItem = (itemId: ChipId) => {
+    const nextSelectedValues = toggleChipSelection(selectedValues, itemId);
+
+    onSelectedValuesChange(nextSelectedValues);
+  };
 
   return (
     <div
@@ -32,10 +40,8 @@ export function Chips<Value extends string>({
       {selectAllLabel ? (
         <ChipButton
           label={selectAllLabel}
-          selected={isAllSelected}
-          onClick={() => {
-            onSelectedValuesChange(isAllSelected ? [] : allValues);
-          }}
+          selected={isSelectAllActive}
+          onClick={toggleAll}
         />
       ) : null}
       {items.map((item) => (
@@ -44,9 +50,7 @@ export function Chips<Value extends string>({
           label={item.name}
           selected={selectedValues.includes(item.id)}
           onClick={() => {
-            onSelectedValuesChange(
-              toggleSelectedValue(selectedValues, item.id),
-            );
+            toggleItem(item.id);
           }}
         />
       ))}
@@ -79,9 +83,9 @@ function ChipButton({
   );
 }
 
-function toggleSelectedValue<Value extends string>(
-  selectedValues: Value[],
-  targetValue: Value,
+function toggleChipSelection<ChipId extends string>(
+  selectedValues: ChipId[],
+  targetValue: ChipId,
 ) {
   if (selectedValues.includes(targetValue)) {
     return selectedValues.filter((value) => value !== targetValue);

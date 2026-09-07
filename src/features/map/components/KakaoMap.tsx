@@ -38,8 +38,8 @@ export function KakaoMap() {
   >(() => [...LOW_COST_COFFEE_BRAND_IDS]);
   const { cafeSearch, searchNearbyCafes } = useKakaoCafeSearch();
   const lowCostCoffeeStores = useMemo(
-    () => filterLowCostCoffeeStores(cafeSearch.places),
-    [cafeSearch.places],
+    () => filterLowCostCoffeeStores(cafeSearch.places, selectedBrandIds),
+    [cafeSearch.places, selectedBrandIds],
   );
   const sortedLowCostCoffeeStores = useMemo(
     () =>

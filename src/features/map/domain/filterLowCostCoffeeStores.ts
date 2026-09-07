@@ -1,17 +1,43 @@
 import type { CafePlace } from "./types";
-import { LOW_COST_COFFEE_BRANDS } from "./lowCostCoffeeBrands";
+import {
+  LOW_COST_COFFEE_BRANDS,
+  LOW_COST_COFFEE_BRAND_IDS,
+} from "./lowCostCoffeeBrands";
+import type {
+  LowCostCoffeeBrand,
+  LowCostCoffeeBrandId,
+} from "./lowCostCoffeeBrands";
 
-export function filterLowCostCoffeeStores(places: CafePlace[]) {
-  return places.filter((place) => isLowCostCoffeeStoreName(place.name));
+export function filterLowCostCoffeeStores(
+  places: CafePlace[],
+  brandIds: LowCostCoffeeBrandId[] = [...LOW_COST_COFFEE_BRAND_IDS],
+) {
+  const selectedBrands = LOW_COST_COFFEE_BRANDS.filter((brand) =>
+    brandIds.includes(brand.id),
+  );
+
+  return places.filter((place) =>
+    isLowCostCoffeeStoreName(place.name, selectedBrands),
+  );
 }
 
-function isLowCostCoffeeStoreName(storeName: string) {
+function isLowCostCoffeeStoreName(
+  storeName: string,
+  brands: readonly LowCostCoffeeBrand[],
+) {
   const normalizedStoreName = normalizeCoffeeStoreName(storeName);
 
-  return LOW_COST_COFFEE_BRANDS.some((brand) =>
-    brand.aliases.some((alias) =>
-      normalizedStoreName.includes(normalizeCoffeeStoreName(alias)),
-    ),
+  return brands.some((brand) =>
+    matchesLowCostCoffeeBrandName(normalizedStoreName, brand),
+  );
+}
+
+function matchesLowCostCoffeeBrandName(
+  normalizedStoreName: string,
+  brand: LowCostCoffeeBrand,
+) {
+  return brand.aliases.some((alias) =>
+    normalizedStoreName.includes(normalizeCoffeeStoreName(alias)),
   );
 }
 

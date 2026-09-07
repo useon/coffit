@@ -7,7 +7,7 @@ export const LOW_COST_COFFEE_BRANDS = [
   {
     id: "compose",
     name: "컴포즈커피",
-    aliases: ["컴포즈커피", "COMPOSE COFFEE"],
+    aliases: ["컴포즈커피", "컴포즈", "COMPOSE"],
   },
   {
     id: "paik",
