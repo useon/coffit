@@ -8,9 +8,11 @@ import type { KakaoMapInstance, KakaoMarkerInstance } from "./types";
 export function useKakaoCafeMarkers({
   mapInstance,
   places,
+  onPlaceSelect,
 }: {
   mapInstance: KakaoMapInstance | null;
   places: CafePlace[];
+  onPlaceSelect?: (placeId: string) => void;
 }) {
   const markerRefs = useRef<KakaoMarkerInstance[]>([]);
 
@@ -27,11 +29,19 @@ export function useKakaoCafeMarkers({
         place.position.longitude,
       );
 
-      return new kakao.maps.Marker({
+      const marker = new kakao.maps.Marker({
         map: mapInstance,
         position,
         image: markerImage,
       });
+
+      if (onPlaceSelect) {
+        kakao.maps.event.addListener(marker, "click", () => {
+          onPlaceSelect(place.id);
+        });
+      }
+
+      return marker;
     });
 
     markerRefs.current = markers;
@@ -40,7 +50,7 @@ export function useKakaoCafeMarkers({
       clearCafeMarkers(markers);
       markerRefs.current = [];
     };
-  }, [mapInstance, places]);
+  }, [mapInstance, onPlaceSelect, places]);
 }
 
 function clearCafeMarkers(markers: KakaoMarkerInstance[]) {

@@ -103,6 +103,13 @@ export type KakaoPagination = {
 
 export type KakaoMaps = {
   load: (callback: () => void) => void;
+  event: {
+    addListener: (
+      target: KakaoMarkerInstance,
+      type: "click",
+      handler: () => void,
+    ) => void;
+  };
   LatLng: new (latitude: number, longitude: number) => KakaoLatLng;
   Map: new (
     container: HTMLElement,
