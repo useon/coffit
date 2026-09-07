@@ -17,8 +17,10 @@ import { Chips } from "@/shared/ui/Chips";
 import { Toast } from "@/shared/ui/Toast";
 
 import { CafeSearchResultList } from "./CafeSearchResultList";
+import { CafeStoreDetail } from "./CafeStoreDetail";
 import { MapView } from "./MapView";
 import { useBrandFilterSearchParams } from "./useBrandFilterSearchParams";
+import { useStoreBottomSheet } from "./useStoreBottomSheet";
 
 const DEFAULT_VIEWPORT: MapViewport = {
   center: {
@@ -45,6 +47,7 @@ export function KakaoMap() {
       }),
     [cafeSearch.places, selectedBrandIds],
   );
+  const storeBottomSheet = useStoreBottomSheet(filteredCafePlaces);
   const { showCurrentLocationMarker } = useKakaoCurrentLocationMarker(
     renderer.mapInstance,
   );
@@ -101,7 +104,18 @@ export function KakaoMap() {
         />
       ) : null}
       <BottomSheet open={filteredCafePlaces.length > 0}>
-        <CafeSearchResultList places={filteredCafePlaces} />
+        {storeBottomSheet.mode === "detail" &&
+        storeBottomSheet.selectedStore ? (
+          <CafeStoreDetail
+            place={storeBottomSheet.selectedStore}
+            onBackToList={storeBottomSheet.showStoreList}
+          />
+        ) : (
+          <CafeSearchResultList
+            places={filteredCafePlaces}
+            onPlaceSelect={storeBottomSheet.selectStore}
+          />
+        )}
       </BottomSheet>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">

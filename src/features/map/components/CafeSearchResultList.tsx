@@ -2,14 +2,24 @@ import type { CafePlace } from "@/features/map/domain/types";
 
 type CafeSearchResultListProps = {
   places: CafePlace[];
+  onPlaceSelect: (placeId: string) => void;
 };
 
-export function CafeSearchResultList({ places }: CafeSearchResultListProps) {
+export function CafeSearchResultList({
+  places,
+  onPlaceSelect,
+}: CafeSearchResultListProps) {
   return (
     <ul className="divide-y divide-slate-100">
       {places.map((place) => (
-        <li key={place.id} className="px-5 py-4">
-          <div className="flex items-start justify-between gap-4">
+        <li key={place.id}>
+          <button
+            type="button"
+            className="flex w-full items-start justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-slate-50"
+            onClick={() => {
+              onPlaceSelect(place.id);
+            }}
+          >
             <div className="min-w-0">
               <p className="truncate text-sm font-bold text-slate-950">
                 {place.name}
@@ -21,7 +31,7 @@ export function CafeSearchResultList({ places }: CafeSearchResultListProps) {
             <span className="shrink-0 text-sm font-bold text-coffit-brand">
               {formatDistance(place.distanceMeters)}
             </span>
-          </div>
+          </button>
         </li>
       ))}
     </ul>
