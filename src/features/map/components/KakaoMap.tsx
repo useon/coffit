@@ -7,7 +7,7 @@ import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeM
 import { useKakaoCafeSearch } from "@/features/map/adapters/kakao/useKakaoCafeSearch";
 import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/useKakaoCurrentLocationMarker";
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
-import { filterLowCostCoffeeStores } from "@/features/map/domain/filterLowCostCoffeeStores";
+import { getFilteredCafePlaces } from "@/features/map/domain/cafeSearchResults";
 import { LOW_COST_COFFEE_BRANDS } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
@@ -35,17 +35,15 @@ export function KakaoMap() {
     changeSelectedBrandIds,
   } = useBrandFilterSearchParams();
   const { cafeSearch, searchNearbyCafes } = useKakaoCafeSearch();
-  const lowCostCoffeeStores = useMemo(
-    () => filterLowCostCoffeeStores(cafeSearch.places, selectedBrandIds),
-    [cafeSearch.places, selectedBrandIds],
-  );
-  const sortedLowCostCoffeeStores = useMemo(
+  const filteredCafePlaces = useMemo(
     () =>
-      [...lowCostCoffeeStores].sort(
-        (previousPlace, nextPlace) =>
-          previousPlace.distanceMeters - nextPlace.distanceMeters,
-      ),
-    [lowCostCoffeeStores],
+      getFilteredCafePlaces({
+        places: cafeSearch.places,
+        filters: {
+          brandIds: selectedBrandIds,
+        },
+      }),
+    [cafeSearch.places, selectedBrandIds],
   );
   const { showCurrentLocationMarker } = useKakaoCurrentLocationMarker(
     renderer.mapInstance,
@@ -53,7 +51,7 @@ export function KakaoMap() {
   const { moveMapToPoint } = renderer;
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
-    places: lowCostCoffeeStores,
+    places: filteredCafePlaces,
   });
   const {
     point: currentLocationPoint,
@@ -102,8 +100,8 @@ export function KakaoMap() {
           durationMs={mapNotice.durationMs}
         />
       ) : null}
-      <BottomSheet open={sortedLowCostCoffeeStores.length > 0}>
-        <CafeSearchResultList places={sortedLowCostCoffeeStores} />
+      <BottomSheet open={filteredCafePlaces.length > 0}>
+        <CafeSearchResultList places={filteredCafePlaces} />
       </BottomSheet>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
