@@ -55,6 +55,7 @@ export function KakaoMap() {
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
     places: filteredCafePlaces,
+    onPlaceSelect: storeBottomSheet.selectStore,
   });
   const {
     point: currentLocationPoint,
