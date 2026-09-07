@@ -4,8 +4,16 @@ export const KAKAO_PLACE_SEARCH_STATUS = {
   ERROR: "ERROR",
 } as const;
 
+export const KAKAO_PLACE_SEARCH_SORT_BY = {
+  ACCURACY: "accuracy",
+  DISTANCE: "distance",
+} as const;
+
 export type KakaoPlaceSearchStatus =
   (typeof KAKAO_PLACE_SEARCH_STATUS)[keyof typeof KAKAO_PLACE_SEARCH_STATUS];
+
+export type KakaoPlaceSearchSortBy =
+  (typeof KAKAO_PLACE_SEARCH_SORT_BY)[keyof typeof KAKAO_PLACE_SEARCH_SORT_BY];
 
 export type KakaoSdk = NonNullable<Window["kakao"]>;
 
@@ -76,6 +84,7 @@ export type KakaoPlacesInstance = {
       location: KakaoLatLng;
       radius?: number;
       size?: number;
+      sort?: KakaoPlaceSearchSortBy;
     },
   ) => void;
 };
@@ -113,6 +122,7 @@ export type KakaoMaps = {
   Size: new (width: number, height: number) => KakaoSize;
   services: {
     Places: new (map?: KakaoMapInstance) => KakaoPlacesInstance;
+    SortBy: typeof KAKAO_PLACE_SEARCH_SORT_BY;
     Status: typeof KAKAO_PLACE_SEARCH_STATUS;
   };
 };
