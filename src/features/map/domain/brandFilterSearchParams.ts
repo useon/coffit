@@ -3,14 +3,10 @@ import type { LowCostCoffeeBrandId } from "./lowCostCoffeeBrands";
 
 const BRAND_FILTER_SEARCH_PARAM = "brands";
 
-type BrandFilterSearchParams = {
-  get: (name: string) => string | null;
-  has: (name: string) => boolean;
-  toString: () => string;
-};
+type ReadableSearchParams = Pick<URLSearchParams, "get" | "has" | "toString">;
 
 export function parseBrandIdsFromSearchParams(
-  searchParams: BrandFilterSearchParams,
+  searchParams: ReadableSearchParams,
 ) {
   if (!searchParams.has(BRAND_FILTER_SEARCH_PARAM)) {
     return [...LOW_COST_COFFEE_BRAND_IDS];
@@ -37,7 +33,7 @@ export function createSearchParamsWithBrandIds({
   searchParams,
   brandIds,
 }: {
-  searchParams: BrandFilterSearchParams;
+  searchParams: ReadableSearchParams;
   brandIds: LowCostCoffeeBrandId[];
 }) {
   const nextSearchParams = new URLSearchParams(searchParams.toString());
