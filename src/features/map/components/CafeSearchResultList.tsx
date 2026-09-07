@@ -1,3 +1,4 @@
+import { formatDistanceText } from "@/features/map/domain/distanceText";
 import type { CafePlace } from "@/features/map/domain/types";
 
 type CafeSearchResultListProps = {
@@ -29,19 +30,11 @@ export function CafeSearchResultList({
               </p>
             </div>
             <span className="shrink-0 text-sm font-bold text-coffit-brand">
-              {formatDistance(place.distanceMeters)}
+              {formatDistanceText(place.distanceMeters)}
             </span>
           </button>
         </li>
       ))}
     </ul>
   );
-}
-
-function formatDistance(distanceMeters: number) {
-  if (distanceMeters < 1000) {
-    return `${distanceMeters}m`;
-  }
-
-  return `${(distanceMeters / 1000).toFixed(1)}km`;
 }

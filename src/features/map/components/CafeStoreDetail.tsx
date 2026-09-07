@@ -1,5 +1,6 @@
 import { ChevronLeft } from "lucide-react";
 
+import { formatDistanceText } from "@/features/map/domain/distanceText";
 import type { CafePlace } from "@/features/map/domain/types";
 
 type CafeStoreDetailProps = {
@@ -32,7 +33,7 @@ export function CafeStoreDetail({ place, onBackToList }: CafeStoreDetailProps) {
           <DetailRow label="주소" value={address || "주소 정보 없음"} />
           <DetailRow
             label="거리"
-            value={formatDistance(place.distanceMeters)}
+            value={formatDistanceText(place.distanceMeters)}
           />
           <DetailRow label="전화번호" value={place.phone || "전화번호 없음"} />
         </dl>
@@ -57,12 +58,4 @@ function DetailRow({ label, value }: { label: string; value: string }) {
       <dd className="min-w-0 font-medium leading-5 text-slate-700">{value}</dd>
     </div>
   );
-}
-
-function formatDistance(distanceMeters: number) {
-  if (distanceMeters < 1000) {
-    return `${distanceMeters}m`;
-  }
-
-  return `${(distanceMeters / 1000).toFixed(1)}km`;
 }
