@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Locate, RotateCw } from "lucide-react";
 import Script from "next/script";
 
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
@@ -12,6 +13,7 @@ import { LOW_COST_COFFEE_BRANDS } from "@/features/map/domain/lowCostCoffeeBrand
 import type { LowCostCoffeeBrandId } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
+import type { GeoPoint } from "@/shared/geo/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
 import { BottomSheet } from "@/shared/ui/BottomSheet";
 import { Chips } from "@/shared/ui/Chips";
@@ -21,6 +23,7 @@ import { CafeSearchResultList } from "./CafeSearchResultList";
 import { CafeStoreDetail } from "./CafeStoreDetail";
 import { MapView } from "./MapView";
 import { useBrandFilterSearchParams } from "./useBrandFilterSearchParams";
+import { useMapAreaSearch } from "./useMapAreaSearch";
 import { useStoreBottomSheet } from "./useStoreBottomSheet";
 
 const DEFAULT_VIEWPORT: MapViewport = {
@@ -32,6 +35,7 @@ const DEFAULT_VIEWPORT: MapViewport = {
 };
 
 export function KakaoMap() {
+  const hasSearchedInitialAreaRef = useRef(false);
   const renderer = useKakaoMapRenderer();
   const {
     selectedBrandIds,
@@ -61,39 +65,63 @@ export function KakaoMap() {
     renderer.mapInstance,
   );
   const { moveMapToPoint } = renderer;
+  const focusCurrentLocation = useCallback(
+    (point: GeoPoint) => {
+      moveMapToPoint(point);
+      showCurrentLocationMarker(point);
+    },
+    [moveMapToPoint, showCurrentLocationMarker],
+  );
+  const { isSearchPending, isSearching, searchCurrentArea } =
+    useMapAreaSearch({
+      currentCenter: renderer.center,
+      searchedCenter: cafeSearch.center,
+      searchStatus: cafeSearch.status,
+      getCenterPoint: renderer.getCenterPoint,
+      searchNearbyCafes,
+    });
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
     places: filteredCafePlaces,
     onPlaceSelect: storeBottomSheet.selectStore,
   });
   const {
+    isLoading: isCurrentLocationLoading,
     point: currentLocationPoint,
     error: currentLocationError,
   } = useCurrentLocation();
+  const canFocusCurrentLocation =
+    renderer.status === "ready" &&
+    !isCurrentLocationLoading &&
+    currentLocationPoint !== null;
   const mapNotice = getMapNotice({
     mapStatus: renderer.status,
     currentLocationError,
   });
-
   useEffect(() => {
-    if (renderer.status !== "ready") {
+    if (
+      renderer.status !== "ready" ||
+      isCurrentLocationLoading ||
+      hasSearchedInitialAreaRef.current
+    ) {
       return;
     }
 
+    hasSearchedInitialAreaRef.current = true;
+
     if (currentLocationPoint) {
-      moveMapToPoint(currentLocationPoint);
-      showCurrentLocationMarker(currentLocationPoint);
+      focusCurrentLocation(currentLocationPoint);
     }
 
-    searchNearbyCafes(currentLocationPoint ?? DEFAULT_VIEWPORT.center);
+    const initialSearchCenter = currentLocationPoint ?? DEFAULT_VIEWPORT.center;
+    searchNearbyCafes(initialSearchCenter);
   }, [
     currentLocationPoint,
-    moveMapToPoint,
+    focusCurrentLocation,
+    isCurrentLocationLoading,
     renderer.status,
     searchNearbyCafes,
-    showCurrentLocationMarker,
   ]);
-
   return (
     <main className="relative min-h-dvh overflow-hidden bg-slate-100 text-slate-950">
       {renderer.sdkUrl ? (
@@ -151,6 +179,37 @@ export function KakaoMap() {
             selectAllLabel="전체"
           />
         </div>
+      </div>
+      {isSearchPending ? (
+        <div className="pointer-events-none absolute inset-x-0 top-32 z-10 flex justify-center px-4 sm:top-36">
+          <button
+            type="button"
+            className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-coffit-brand px-4 py-2 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isSearching}
+            onClick={searchCurrentArea}
+          >
+            <RotateCw aria-hidden="true" size={16} strokeWidth={2.5} />
+            현 위치에서 검색
+          </button>
+        </div>
+      ) : null}
+      <div className="pointer-events-none absolute top-44 right-4 z-10 sm:top-48 sm:right-6">
+        <button
+          type="button"
+          aria-label="현재 위치로 이동"
+          title="현재 위치로 이동"
+          className="pointer-events-auto grid size-11 place-items-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur transition-colors hover:bg-white hover:text-coffit-brand disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!canFocusCurrentLocation}
+          onClick={() => {
+            if (!currentLocationPoint) {
+              return;
+            }
+
+            focusCurrentLocation(currentLocationPoint);
+          }}
+        >
+          <Locate aria-hidden="true" size={20} strokeWidth={2.25} />
+        </button>
       </div>
     </main>
   );

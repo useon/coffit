@@ -11,11 +11,12 @@ export type CurrentLocationState = {
 };
 
 export function useCurrentLocation(): CurrentLocationState {
-  const [location, setLocation] = useState<CurrentLocationState>({
-    isLoading: true,
+  const [location, setLocation] = useState<CurrentLocationState>(() => ({
+    isLoading:
+      typeof navigator === "undefined" || "geolocation" in navigator,
     point: null,
     error: null,
-  });
+  }));
 
   useEffect(() => {
     if (!("geolocation" in navigator)) {

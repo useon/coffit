@@ -7,10 +7,13 @@ export type CafeSearchStatus = "idle" | "loading" | "success" | "empty" | "error
 export type CafeSearchState = {
   status: CafeSearchStatus;
   places: CafePlace[];
+  center: GeoPoint | null;
 };
 
 export interface MapRenderer {
   status: MapRendererStatus;
+  center: GeoPoint | null;
   mount: (container: HTMLElement, viewport: MapViewport) => void;
   moveMapToPoint: (targetPoint: GeoPoint) => void;
+  getCenterPoint: () => GeoPoint | null;
 }
