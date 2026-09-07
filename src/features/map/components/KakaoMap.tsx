@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import Script from "next/script";
 
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
@@ -9,6 +9,7 @@ import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/use
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
 import { getFilteredCafePlaces } from "@/features/map/domain/cafeSearchResults";
 import { LOW_COST_COFFEE_BRANDS } from "@/features/map/domain/lowCostCoffeeBrands";
+import type { LowCostCoffeeBrandId } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
@@ -48,6 +49,14 @@ export function KakaoMap() {
     [cafeSearch.places, selectedBrandIds],
   );
   const storeBottomSheet = useStoreBottomSheet(filteredCafePlaces);
+  const { showStoreList } = storeBottomSheet;
+  const changeBrandFilter = useCallback(
+    (brandIds: LowCostCoffeeBrandId[]) => {
+      showStoreList();
+      changeSelectedBrandIds(brandIds);
+    },
+    [changeSelectedBrandIds, showStoreList],
+  );
   const { showCurrentLocationMarker } = useKakaoCurrentLocationMarker(
     renderer.mapInstance,
   );
@@ -104,7 +113,11 @@ export function KakaoMap() {
           durationMs={mapNotice.durationMs}
         />
       ) : null}
-      <BottomSheet open={filteredCafePlaces.length > 0}>
+      <BottomSheet
+        open={filteredCafePlaces.length > 0}
+        expanded={storeBottomSheet.isExpanded}
+        onExpandedChange={storeBottomSheet.changeExpanded}
+      >
         {storeBottomSheet.mode === "detail" &&
         storeBottomSheet.selectedStore ? (
           <CafeStoreDetail
@@ -134,7 +147,7 @@ export function KakaoMap() {
             ariaLabel="브랜드 필터"
             items={LOW_COST_COFFEE_BRANDS}
             selectedValues={selectedBrandIds}
-            onSelectedValuesChange={changeSelectedBrandIds}
+            onSelectedValuesChange={changeBrandFilter}
             selectAllLabel="전체"
           />
         </div>
