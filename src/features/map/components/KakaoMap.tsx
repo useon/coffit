@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import Script from "next/script";
 
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
@@ -8,11 +8,7 @@ import { useKakaoCafeSearch } from "@/features/map/adapters/kakao/useKakaoCafeSe
 import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/useKakaoCurrentLocationMarker";
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
 import { filterLowCostCoffeeStores } from "@/features/map/domain/filterLowCostCoffeeStores";
-import {
-  LOW_COST_COFFEE_BRANDS,
-  LOW_COST_COFFEE_BRAND_IDS,
-} from "@/features/map/domain/lowCostCoffeeBrands";
-import type { LowCostCoffeeBrandId } from "@/features/map/domain/lowCostCoffeeBrands";
+import { LOW_COST_COFFEE_BRANDS } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
@@ -22,6 +18,7 @@ import { Toast } from "@/shared/ui/Toast";
 
 import { CafeSearchResultList } from "./CafeSearchResultList";
 import { MapView } from "./MapView";
+import { useBrandFilterSearchParams } from "./useBrandFilterSearchParams";
 
 const DEFAULT_VIEWPORT: MapViewport = {
   center: {
@@ -33,9 +30,10 @@ const DEFAULT_VIEWPORT: MapViewport = {
 
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
-  const [selectedBrandIds, setSelectedBrandIds] = useState<
-    LowCostCoffeeBrandId[]
-  >(() => [...LOW_COST_COFFEE_BRAND_IDS]);
+  const {
+    selectedBrandIds,
+    changeSelectedBrandIds,
+  } = useBrandFilterSearchParams();
   const { cafeSearch, searchNearbyCafes } = useKakaoCafeSearch();
   const lowCostCoffeeStores = useMemo(
     () => filterLowCostCoffeeStores(cafeSearch.places, selectedBrandIds),
@@ -123,7 +121,7 @@ export function KakaoMap() {
             ariaLabel="브랜드 필터"
             items={LOW_COST_COFFEE_BRANDS}
             selectedValues={selectedBrandIds}
-            onSelectedValuesChange={setSelectedBrandIds}
+            onSelectedValuesChange={changeSelectedBrandIds}
             selectAllLabel="전체"
           />
         </div>
