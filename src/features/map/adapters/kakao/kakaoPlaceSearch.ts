@@ -83,6 +83,7 @@ function searchKakaoCategoryPlaces({
       {
         location: new kakao.maps.LatLng(center.latitude, center.longitude),
         size: KAKAO_PLACE_SEARCH_PAGE_SIZE,
+        sort: kakao.maps.services.SortBy.DISTANCE,
       },
     );
   });

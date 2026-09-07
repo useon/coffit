@@ -7,15 +7,18 @@ import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeM
 import { useKakaoCafeSearch } from "@/features/map/adapters/kakao/useKakaoCafeSearch";
 import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/useKakaoCurrentLocationMarker";
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
-import { filterLowCostCoffeeStores } from "@/features/map/domain/filterLowCostCoffeeStores";
+import { getFilteredCafePlaces } from "@/features/map/domain/cafeSearchResults";
+import { LOW_COST_COFFEE_BRANDS } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { MapViewport } from "@/features/map/domain/types";
 import type { MapRendererStatus } from "@/features/map/ports/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
 import { BottomSheet } from "@/shared/ui/BottomSheet";
+import { Chips } from "@/shared/ui/Chips";
 import { Toast } from "@/shared/ui/Toast";
 
 import { CafeSearchResultList } from "./CafeSearchResultList";
 import { MapView } from "./MapView";
+import { useBrandFilterSearchParams } from "./useBrandFilterSearchParams";
 
 const DEFAULT_VIEWPORT: MapViewport = {
   center: {
@@ -27,18 +30,20 @@ const DEFAULT_VIEWPORT: MapViewport = {
 
 export function KakaoMap() {
   const renderer = useKakaoMapRenderer();
+  const {
+    selectedBrandIds,
+    changeSelectedBrandIds,
+  } = useBrandFilterSearchParams();
   const { cafeSearch, searchNearbyCafes } = useKakaoCafeSearch();
-  const lowCostCoffeeStores = useMemo(
-    () => filterLowCostCoffeeStores(cafeSearch.places),
-    [cafeSearch.places],
-  );
-  const sortedLowCostCoffeeStores = useMemo(
+  const filteredCafePlaces = useMemo(
     () =>
-      [...lowCostCoffeeStores].sort(
-        (previousPlace, nextPlace) =>
-          previousPlace.distanceMeters - nextPlace.distanceMeters,
-      ),
-    [lowCostCoffeeStores],
+      getFilteredCafePlaces({
+        places: cafeSearch.places,
+        filters: {
+          brandIds: selectedBrandIds,
+        },
+      }),
+    [cafeSearch.places, selectedBrandIds],
   );
   const { showCurrentLocationMarker } = useKakaoCurrentLocationMarker(
     renderer.mapInstance,
@@ -46,7 +51,7 @@ export function KakaoMap() {
   const { moveMapToPoint } = renderer;
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
-    places: lowCostCoffeeStores,
+    places: filteredCafePlaces,
   });
   const {
     point: currentLocationPoint,
@@ -95,14 +100,14 @@ export function KakaoMap() {
           durationMs={mapNotice.durationMs}
         />
       ) : null}
-      <BottomSheet open={sortedLowCostCoffeeStores.length > 0}>
-        <CafeSearchResultList places={sortedLowCostCoffeeStores} />
+      <BottomSheet open={filteredCafePlaces.length > 0}>
+        <CafeSearchResultList places={filteredCafePlaces} />
       </BottomSheet>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
-        <div className="pointer-events-auto mx-auto max-w-3xl">
+        <div className="pointer-events-auto mx-auto flex max-w-3xl flex-col gap-3">
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-lg shadow-slate-900/10 backdrop-blur">
-            <span className="text-lg font-bold tracking-normal text-emerald-700">
+            <span className="text-lg font-bold tracking-normal text-coffit-brand">
               Coffit
             </span>
             <div className="h-5 w-px bg-slate-200" />
@@ -110,6 +115,13 @@ export function KakaoMap() {
               주변 저가 프랜차이즈 카페
             </p>
           </div>
+          <Chips
+            ariaLabel="브랜드 필터"
+            items={LOW_COST_COFFEE_BRANDS}
+            selectedValues={selectedBrandIds}
+            onSelectedValuesChange={changeSelectedBrandIds}
+            selectAllLabel="전체"
+          />
         </div>
       </div>
     </main>
