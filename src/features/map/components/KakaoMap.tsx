@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { RotateCw } from "lucide-react";
+import { Locate, RotateCw } from "lucide-react";
 import Script from "next/script";
 
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
@@ -23,8 +23,8 @@ import { CafeSearchResultList } from "./CafeSearchResultList";
 import { CafeStoreDetail } from "./CafeStoreDetail";
 import { MapView } from "./MapView";
 import { useBrandFilterSearchParams } from "./useBrandFilterSearchParams";
-import { useStoreBottomSheet } from "./useStoreBottomSheet";
 import { useMapAreaSearch } from "./useMapAreaSearch";
+import { useStoreBottomSheet } from "./useStoreBottomSheet";
 
 const DEFAULT_VIEWPORT: MapViewport = {
   center: {
@@ -90,6 +90,10 @@ export function KakaoMap() {
     point: currentLocationPoint,
     error: currentLocationError,
   } = useCurrentLocation();
+  const canFocusCurrentLocation =
+    renderer.status === "ready" &&
+    !isCurrentLocationLoading &&
+    currentLocationPoint !== null;
   const mapNotice = getMapNotice({
     mapStatus: renderer.status,
     currentLocationError,
@@ -189,6 +193,24 @@ export function KakaoMap() {
           </button>
         </div>
       ) : null}
+      <div className="pointer-events-none absolute top-44 right-4 z-10 sm:top-48 sm:right-6">
+        <button
+          type="button"
+          aria-label="현재 위치로 이동"
+          title="현재 위치로 이동"
+          className="pointer-events-auto grid size-11 place-items-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur transition-colors hover:bg-white hover:text-coffit-brand disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!canFocusCurrentLocation}
+          onClick={() => {
+            if (!currentLocationPoint) {
+              return;
+            }
+
+            focusCurrentLocation(currentLocationPoint);
+          }}
+        >
+          <Locate aria-hidden="true" size={20} strokeWidth={2.25} />
+        </button>
+      </div>
     </main>
   );
 }
