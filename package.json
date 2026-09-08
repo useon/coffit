@@ -5,10 +5,13 @@
   "scripts": {
     "dev": "pnpm dev:web",
     "dev:web": "pnpm --filter @coffit/web dev",
+    "dev:api": "pnpm --filter @coffit/api start:dev",
     "build": "pnpm build:web",
     "build:web": "pnpm --filter @coffit/web build",
+    "build:api": "pnpm --filter @coffit/api build",
     "start": "pnpm start:web",
     "start:web": "pnpm --filter @coffit/web start",
+    "start:api": "pnpm --filter @coffit/api start",
     "lint": "pnpm --filter @coffit/web lint",
     "format": "pnpm --filter @coffit/web format",
     "format:check": "pnpm --filter @coffit/web format:check"

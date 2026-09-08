@@ -4,6 +4,7 @@ node_modules
 apps/*/node_modules
 out
 apps/*/out
+apps/*/dist
 build
 apps/*/build
 coverage
