@@ -12,6 +12,7 @@
     "start": "pnpm start:web",
     "start:web": "pnpm --filter @coffit/web start",
     "start:api": "pnpm --filter @coffit/api start",
+    "test:api": "pnpm --filter @coffit/api test",
     "lint": "pnpm --filter @coffit/web lint",
     "format": "pnpm --filter @coffit/web format",
     "format:check": "pnpm --filter @coffit/web format:check"
