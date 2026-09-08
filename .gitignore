@@ -19,6 +19,7 @@
 /apps/*/.next/
 /out/
 /apps/*/out/
+/apps/*/dist/
 
 # production
 /build
