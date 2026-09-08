@@ -7,6 +7,8 @@ const KAKAO_CAFE_CATEGORY_GROUP_CODE = "CE7";
 const KAKAO_PLACE_SEARCH_PAGE_SIZE = 15;
 const KAKAO_PLACE_SEARCH_MAX_PAGE_COUNT = 3;
 const KAKAO_PLACE_SEARCH_RADIUS_METERS = 20000;
+const KAKAO_PROVIDER_UNAVAILABLE_MESSAGE =
+  "Cafe search provider is unavailable";
 
 type SearchCafePlacesParams = {
   latitude: number;
@@ -66,7 +68,7 @@ export class KakaoLocalClient {
     const restApiKey = process.env.KAKAO_REST_API_KEY;
 
     if (!restApiKey) {
-      throw new ServiceUnavailableException("Kakao REST API key is missing");
+      throw new ServiceUnavailableException(KAKAO_PROVIDER_UNAVAILABLE_MESSAGE);
     }
 
     const url = new URL(KAKAO_LOCAL_CATEGORY_SEARCH_URL);
@@ -85,7 +87,7 @@ export class KakaoLocalClient {
     });
 
     if (!response.ok) {
-      throw new ServiceUnavailableException("Kakao Local API request failed");
+      throw new ServiceUnavailableException(KAKAO_PROVIDER_UNAVAILABLE_MESSAGE);
     }
 
     return (await response.json()) as KakaoLocalCategorySearchResponse;
