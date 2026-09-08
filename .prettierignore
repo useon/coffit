@@ -1,6 +1,10 @@
 .next
+apps/*/.next
 node_modules
+apps/*/node_modules
 out
+apps/*/out
 build
+apps/*/build
 coverage
 pnpm-lock.yaml
