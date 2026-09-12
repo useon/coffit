@@ -4,15 +4,17 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Locate, RotateCw } from "lucide-react";
 import Script from "next/script";
 
+import { useCafeSearch } from "@/features/map/api/useCafeSearch";
 import { useKakaoCafeMarkers } from "@/features/map/adapters/kakao/useKakaoCafeMarkers";
-import { useKakaoCafeSearch } from "@/features/map/adapters/kakao/useKakaoCafeSearch";
 import { useKakaoCurrentLocationMarker } from "@/features/map/adapters/kakao/useKakaoCurrentLocationMarker";
 import { useKakaoMapRenderer } from "@/features/map/adapters/kakao/useKakaoMapRenderer";
-import { getFilteredCafePlaces } from "@/features/map/domain/cafeSearchResults";
 import { LOW_COST_COFFEE_BRANDS } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { LowCostCoffeeBrandId } from "@/features/map/domain/lowCostCoffeeBrands";
 import type { MapViewport } from "@/features/map/domain/types";
-import type { MapRendererStatus } from "@/features/map/ports/types";
+import type {
+  CafeSearchStatus,
+  MapRendererStatus,
+} from "@/features/map/ports/types";
 import type { GeoPoint } from "@/shared/geo/types";
 import { useCurrentLocation } from "@/shared/geo/useCurrentLocation";
 import { BottomSheet } from "@/shared/ui/BottomSheet";
@@ -41,15 +43,12 @@ export function KakaoMap() {
     selectedBrandIds,
     changeSelectedBrandIds,
   } = useBrandFilterSearchParams();
-  const { cafeSearch, searchNearbyCafes } = useKakaoCafeSearch();
+  const { cafeSearch, searchNearbyCafes } = useCafeSearch();
   const filteredCafePlaces = useMemo(
     () =>
-      getFilteredCafePlaces({
-        places: cafeSearch.places,
-        filters: {
-          brandIds: selectedBrandIds,
-        },
-      }),
+      cafeSearch.places.filter((place) =>
+        selectedBrandIds.includes(place.brandId),
+      ),
     [cafeSearch.places, selectedBrandIds],
   );
   const storeBottomSheet = useStoreBottomSheet(filteredCafePlaces);
@@ -96,6 +95,7 @@ export function KakaoMap() {
     currentLocationPoint !== null;
   const mapNotice = getMapNotice({
     mapStatus: renderer.status,
+    cafeSearchStatus: cafeSearch.status,
     currentLocationError,
   });
   useEffect(() => {
@@ -217,9 +217,11 @@ export function KakaoMap() {
 
 function getMapNotice({
   mapStatus,
+  cafeSearchStatus,
   currentLocationError,
 }: {
   mapStatus: MapRendererStatus;
+  cafeSearchStatus: CafeSearchStatus;
   currentLocationError: GeolocationPositionError | null;
 }) {
   if (mapStatus === "error") {
@@ -231,6 +233,13 @@ function getMapNotice({
 
   if (mapStatus !== "ready") {
     return null;
+  }
+
+  if (cafeSearchStatus === "error") {
+    return {
+      message: "카페를 검색하지 못했습니다. 잠시 후 다시 시도해주세요.",
+      durationMs: 3000,
+    };
   }
 
   if (
