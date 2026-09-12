@@ -45,6 +45,7 @@ gh issue develop 7 --base release --name feat/#7-current-location-map-center --c
 
 ## 작성 기준
 
+- Issue 제목과 본문은 협업 문서이므로 존댓말로 작성한다.
 - Issue 본문은 템플릿의 섹션 구조를 따른다.
 - Issue는 하나의 PR로 해결 가능한 크기로 작성한다.
 - Issue에는 실제 구현에 필요한 목표, 작업 범위, 완료 기준만 간결하게 남긴다.
