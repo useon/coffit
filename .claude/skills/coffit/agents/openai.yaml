@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coffit"
+  short_description: "Coffit 구현·리뷰·PR 준비 workflow"
+  default_prompt: "Use $coffit to implement or review a Coffit change in one verified unit."
