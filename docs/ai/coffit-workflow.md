@@ -20,10 +20,28 @@
 ## 공통 시작 절차
 
 1. `AGENTS.md`와 `CLAUDE.md`를 읽고 저장소 작업 규칙을 적용한다.
-2. 현재 브랜치, base branch, `git status`, 기존 diff를 확인한다.
-3. 수정 대상 경로에 적용되는 `docs/ai/rules/`를 확인한다. Claude Code에서는 경로별 `.claude/rules/` 어댑터가 같은 원본을 자동으로 연결한다.
-4. 관련 Issue, 작업 노트, 유사 구현을 필요한 만큼만 읽는다.
-5. 사용자가 만든 변경은 보존하고, 요청 범위 밖의 리팩터링은 하지 않는다.
+2. 작업을 연결할 Issue가 있는지 확인한다. Issue가 없으면 목표, 완료 조건,
+   검증 방법을 먼저 정리해 Issue 초안을 만들고, 실제 Issue 생성은 사용자가
+   명시적으로 요청한 경우에만 수행한다.
+3. 현재 브랜치, base branch, `git status`, 기존 diff를 확인한다. 새 작업은 Issue
+   번호와 작업 성격에 맞는 브랜치에서 시작한다.
+4. 수정 대상 경로에 적용되는 `docs/ai/rules/`를 확인한다. Claude Code에서는 경로별
+   `.claude/rules/` 어댑터가 같은 원본을 자동으로 연결한다.
+5. 관련 Issue, 작업 노트, 유사 구현을 필요한 만큼만 읽는다.
+6. 사용자가 만든 변경은 보존하고, 요청 범위 밖의 리팩터링은 하지 않는다.
+
+### Issue 생성 요청
+
+사용자가 Issue 생성을 요청하면 먼저 `.github/AI_ISSUE_GUIDE.md`와 해당 Issue
+템플릿을 읽는다. Issue를 바로 생성하지 않고 다음 초안을 먼저 보여준다.
+
+- `[PREFIX]` 형식의 제목
+- 템플릿을 따른 본문
+- 라벨, 마일스톤, assignee
+
+Issue는 사용자가 초안을 승인한 뒤에만 생성한다. 생성 후에는 가이드에 따라 원격
+`release`를 기준으로 `gh issue develop --base release`를 사용해 작업 브랜치를
+만든다.
 
 ## Build 모드
 
