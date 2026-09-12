@@ -1,20 +1,3 @@
-export const KAKAO_PLACE_SEARCH_STATUS = {
-  OK: "OK",
-  ZERO_RESULT: "ZERO_RESULT",
-  ERROR: "ERROR",
-} as const;
-
-export const KAKAO_PLACE_SEARCH_SORT_BY = {
-  ACCURACY: "accuracy",
-  DISTANCE: "distance",
-} as const;
-
-export type KakaoPlaceSearchStatus =
-  (typeof KAKAO_PLACE_SEARCH_STATUS)[keyof typeof KAKAO_PLACE_SEARCH_STATUS];
-
-export type KakaoPlaceSearchSortBy =
-  (typeof KAKAO_PLACE_SEARCH_SORT_BY)[keyof typeof KAKAO_PLACE_SEARCH_SORT_BY];
-
 export type KakaoSdk = NonNullable<Window["kakao"]>;
 
 export type KakaoLatLng = {
@@ -57,50 +40,6 @@ export type KakaoMarkerImageOptions = {
   spriteSize?: KakaoSize;
 };
 
-export type KakaoPlaceSearchResult = {
-  address_name: string;
-  category_group_code: string;
-  category_group_name: string;
-  category_name: string;
-  distance: string;
-  id: string;
-  phone: string;
-  place_name: string;
-  place_url: string;
-  road_address_name: string;
-  x: string;
-  y: string;
-};
-
-export type KakaoPlacesInstance = {
-  categorySearch: (
-    categoryCode: string,
-    callback: (
-      results: KakaoPlaceSearchResult[],
-      status: KakaoPlaceSearchStatus,
-      pagination: KakaoPagination,
-    ) => void,
-    options: {
-      location: KakaoLatLng;
-      radius?: number;
-      size?: number;
-      sort?: KakaoPlaceSearchSortBy;
-    },
-  ) => void;
-};
-
-export type KakaoPagination = {
-  current: number;
-  first: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  last: number;
-  nextPage: () => void;
-  perPage: number;
-  prevPage: () => void;
-  totalCount: number;
-};
-
 export type KakaoEventAddListener = {
   (
     target: KakaoMarkerInstance,
@@ -138,11 +77,6 @@ export type KakaoMaps = {
   ) => KakaoMarkerImageInstance;
   Point: new (x: number, y: number) => KakaoPoint;
   Size: new (width: number, height: number) => KakaoSize;
-  services: {
-    Places: new (map?: KakaoMapInstance) => KakaoPlacesInstance;
-    SortBy: typeof KAKAO_PLACE_SEARCH_SORT_BY;
-    Status: typeof KAKAO_PLACE_SEARCH_STATUS;
-  };
 };
 
 declare global {

@@ -3,9 +3,9 @@ import { useCallback, useState } from "react";
 import type { CafeSearchState } from "@/features/map/ports/types";
 import type { GeoPoint } from "@/shared/geo/types";
 
-import { searchKakaoCafesByMapCenter } from "./kakaoPlaceSearch";
+import { fetchNearbyCafes } from "./cafeSearchApi";
 
-export function useKakaoCafeSearch() {
+export function useCafeSearch() {
   const [cafeSearch, setCafeSearch] = useState<CafeSearchState>({
     status: "idle",
     places: [],
@@ -13,14 +13,19 @@ export function useKakaoCafeSearch() {
   });
 
   const searchNearbyCafes = useCallback(async (center: GeoPoint) => {
-    const kakao = window.kakao;
-    if (!kakao) {
-      return;
-    }
-
     setCafeSearch({ status: "loading", places: [], center });
-    const result = await searchKakaoCafesByMapCenter({ kakao, center });
-    setCafeSearch({ ...result, center });
+
+    try {
+      const places = await fetchNearbyCafes({ center });
+
+      setCafeSearch({
+        status: places.length > 0 ? "success" : "empty",
+        places,
+        center,
+      });
+    } catch {
+      setCafeSearch({ status: "error", places: [], center });
+    }
   }, []);
 
   return {
