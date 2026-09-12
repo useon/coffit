@@ -94,3 +94,8 @@ type은 작업 성격에 따라 선택한다.
 - AI가 생성한 테스트, 문서, 주석도 실제 동작과 일치하는지 검토한다.
 - 보안 정보, 개인 정보, 운영 키는 프롬프트나 코드에 포함하지 않는다.
 - AI가 추정한 내용은 PR에 설계 판단 또는 가정으로 명시한다.
+
+## Coffit 공통 AI workflow
+
+- Codex와 Claude Code의 코드 변경 작업은 `docs/ai/coffit-workflow.md`를 공통 workflow 원본으로 사용한다.
+- `.claude/skills/coffit/`는 Claude Code에서 이 workflow를 호출하기 위한 도구별 어댑터다. 프로젝트 규칙과 workflow 내용을 어댑터에 중복해서 정의하지 않는다.
