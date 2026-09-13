@@ -17,6 +17,7 @@ export type KakaoMarkerInstance = {
   setMap: (map: KakaoMapInstance | null) => void;
   setPosition: (position: KakaoLatLng) => void;
   setImage: (image: KakaoMarkerImageInstance) => void;
+  setZIndex: (zIndex: number) => void;
 };
 
 export type KakaoPoint = {

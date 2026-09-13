@@ -52,7 +52,7 @@ export function KakaoMap() {
     [cafeSearch.places, selectedBrandIds],
   );
   const storeBottomSheet = useStoreBottomSheet(filteredCafePlaces);
-  const { showStoreList } = storeBottomSheet;
+  const { selectStore, showStoreList } = storeBottomSheet;
   const changeBrandFilter = useCallback(
     (brandIds: LowCostCoffeeBrandId[]) => {
       showStoreList();
@@ -83,10 +83,23 @@ export function KakaoMap() {
     showStoreList();
     searchCurrentArea();
   }, [searchCurrentArea, showStoreList]);
+  const selectCafePlace = useCallback(
+    (placeId: string) => {
+      const place = filteredCafePlaces.find((item) => item.id === placeId);
+      if (!place) {
+        return;
+      }
+
+      moveMapToPoint(place.position);
+      selectStore(placeId);
+    },
+    [filteredCafePlaces, moveMapToPoint, selectStore],
+  );
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
     places: filteredCafePlaces,
-    onPlaceSelect: storeBottomSheet.selectStore,
+    selectedPlaceId: storeBottomSheet.selectedStore?.id ?? null,
+    onPlaceSelect: selectCafePlace,
   });
   const {
     isLoading: isCurrentLocationLoading,
@@ -159,7 +172,7 @@ export function KakaoMap() {
         ) : (
           <CafeSearchResultList
             places={filteredCafePlaces}
-            onPlaceSelect={storeBottomSheet.selectStore}
+            onPlaceSelect={selectCafePlace}
           />
         )}
       </BottomSheet>

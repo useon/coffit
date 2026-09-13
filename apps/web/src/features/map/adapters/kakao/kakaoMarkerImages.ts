@@ -1,6 +1,8 @@
 import type { KakaoMarkerImageInstance, KakaoSdk } from "./types";
 
 const CAFE_MARKER_IMAGE_URL = "/markers/coffit-cafe-marker.png";
+const CAFE_MARKER_SIZE = 48;
+const SELECTED_CAFE_MARKER_SIZE = 60;
 const CURRENT_LOCATION_MARKER_IMAGE_URL =
   "/markers/current-location-marker.png";
 const CURRENT_LOCATION_MARKER_SIZE = {
@@ -11,15 +13,19 @@ const CURRENT_LOCATION_MARKER_SIZE = {
 
 export function createCafeMarkerImage({
   kakao,
+  selected = false,
 }: {
   kakao: KakaoSdk;
+  selected?: boolean;
 }): KakaoMarkerImageInstance {
+  const markerSize = selected ? SELECTED_CAFE_MARKER_SIZE : CAFE_MARKER_SIZE;
+
   return new kakao.maps.MarkerImage(
     CAFE_MARKER_IMAGE_URL,
-    new kakao.maps.Size(48, 48),
+    new kakao.maps.Size(markerSize, markerSize),
     {
-      alt: "카페",
-      offset: new kakao.maps.Point(24, 47),
+      alt: selected ? "선택한 카페" : "카페",
+      offset: new kakao.maps.Point(markerSize / 2, markerSize - 1),
     },
   );
 }
