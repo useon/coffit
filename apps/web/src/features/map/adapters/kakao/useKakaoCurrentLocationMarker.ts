@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 import type { GeoPoint } from "@/shared/geo/types";
 
+import { createCurrentLocationMarkerImage } from "./kakaoMarkerImages";
 import type { KakaoMapInstance, KakaoMarkerInstance } from "./types";
 
 export function useKakaoCurrentLocationMarker(
@@ -30,13 +31,34 @@ export function useKakaoCurrentLocationMarker(
       markerRef.current = new kakao.maps.Marker({
         map: mapInstance,
         position,
+        image: createCurrentLocationMarkerImage({
+          kakao,
+          viewportWidth: window.innerWidth,
+        }),
       });
     },
     [mapInstance],
   );
 
   useEffect(() => {
+    const updateMarkerImage = () => {
+      const kakao = window.kakao;
+      if (!kakao || !markerRef.current) {
+        return;
+      }
+
+      markerRef.current.setImage(
+        createCurrentLocationMarkerImage({
+          kakao,
+          viewportWidth: window.innerWidth,
+        }),
+      );
+    };
+
+    window.addEventListener("resize", updateMarkerImage);
+
     return () => {
+      window.removeEventListener("resize", updateMarkerImage);
       markerRef.current?.setMap(null);
       markerRef.current = null;
     };

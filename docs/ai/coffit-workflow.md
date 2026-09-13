@@ -52,7 +52,7 @@ AI의 추정은 사실처럼 적용하지 않고 가정으로 표시한다. 상�
 - 템플릿을 따른 본문
 - 라벨, 마일스톤, assignee
 
-Issue 제목과 본문은 협업 문서로 바로 사용할 수 있도록 존댓말로 작성한다.
+Issue 제목, 본문, 작업 목록의 작성 형식은 `.github/AI_ISSUE_GUIDE.md`를 따른다.
 
 Issue는 사용자가 초안을 승인한 뒤에만 생성한다. 생성 후에는 가이드에 따라 원격
 `release`를 기준으로 `gh issue develop --base release`를 사용해 작업 브랜치를

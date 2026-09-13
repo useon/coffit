@@ -34,7 +34,7 @@ export function Chips<ChipId extends string>({
   return (
     <div
       aria-label={ariaLabel}
-      className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="flex flex-nowrap justify-start gap-1 sm:gap-2"
       role="group"
     >
       {selectAllLabel ? (
@@ -71,7 +71,7 @@ function ChipButton({
     <button
       type="button"
       aria-pressed={selected}
-      className={`h-9 shrink-0 rounded-full border bg-white px-4 text-sm font-bold shadow-sm shadow-slate-900/5 transition-colors ${
+      className={`h-[clamp(1.75rem,8vw,2.25rem)] shrink-0 whitespace-nowrap rounded-full border-[1.5px] bg-white px-[clamp(0.125rem,1vw,0.5rem)] text-[clamp(0.6rem,3vw,0.875rem)] font-bold shadow-sm shadow-slate-900/5 transition-colors ${
         selected
           ? "border-coffit-brand text-coffit-brand"
           : "border-slate-200 text-slate-700 hover:bg-stone-50 hover:text-slate-950"

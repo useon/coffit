@@ -9,12 +9,15 @@ export type KakaoLatLng = {
 
 export type KakaoMapInstance = {
   getCenter: () => KakaoLatLng;
+  getLevel: () => number;
   setCenter: (center: KakaoLatLng) => void;
 };
 
 export type KakaoMarkerInstance = {
   setMap: (map: KakaoMapInstance | null) => void;
   setPosition: (position: KakaoLatLng) => void;
+  setImage: (image: KakaoMarkerImageInstance) => void;
+  setZIndex: (zIndex: number) => void;
 };
 
 export type KakaoPoint = {
@@ -40,6 +43,17 @@ export type KakaoMarkerImageOptions = {
   spriteSize?: KakaoSize;
 };
 
+export type KakaoCustomOverlayInstance = {
+  setMap: (map: KakaoMapInstance | null) => void;
+};
+
+export type KakaoCustomOverlayOptions = {
+  content: HTMLElement | string;
+  position: KakaoLatLng;
+  xAnchor?: number;
+  yAnchor?: number;
+};
+
 export type KakaoEventAddListener = {
   (
     target: KakaoMarkerInstance,
@@ -51,10 +65,16 @@ export type KakaoEventAddListener = {
     type: "dragend",
     handler: () => void,
   ): void;
+  (
+    target: KakaoMapInstance,
+    type: "zoom_changed",
+    handler: () => void,
+  ): void;
 };
 
 export type KakaoEvent = {
   addListener: KakaoEventAddListener;
+  removeListener: KakaoEventAddListener;
 };
 
 export type KakaoMaps = {
@@ -70,6 +90,9 @@ export type KakaoMaps = {
     position: KakaoLatLng;
     image?: KakaoMarkerImageInstance;
   }) => KakaoMarkerInstance;
+  CustomOverlay: new (
+    options: KakaoCustomOverlayOptions,
+  ) => KakaoCustomOverlayInstance;
   MarkerImage: new (
     imageUrl: string,
     imageSize: KakaoSize,
