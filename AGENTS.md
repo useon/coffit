@@ -79,7 +79,6 @@ type은 작업 성격에 따라 선택한다.
 ## Issue 작성 규칙
 
 - AI가 Issue 생성을 요청받으면 `.github/AI_ISSUE_GUIDE.md`의 상세 규칙을 따른다.
-- Issue 제목과 본문은 협업 문서이므로 존댓말로 작성한다.
 
 ## PR 작성 규칙
 
