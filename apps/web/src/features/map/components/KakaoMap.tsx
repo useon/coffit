@@ -79,6 +79,10 @@ export function KakaoMap() {
       getCenterPoint: renderer.getCenterPoint,
       searchNearbyCafes,
     });
+  const handleSearchCurrentArea = useCallback(() => {
+    showStoreList();
+    searchCurrentArea();
+  }, [searchCurrentArea, showStoreList]);
   useKakaoCafeMarkers({
     mapInstance: renderer.mapInstance,
     places: filteredCafePlaces,
@@ -178,7 +182,7 @@ export function KakaoMap() {
               type="button"
               className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-coffit-brand px-4 py-2 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isSearching}
-              onClick={searchCurrentArea}
+                onClick={handleSearchCurrentArea}
             >
               <RotateCw aria-hidden="true" size={16} strokeWidth={2.5} />
               현 위치에서 검색
