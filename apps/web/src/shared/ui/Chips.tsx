@@ -34,7 +34,7 @@ export function Chips<ChipId extends string>({
   return (
     <div
       aria-label={ariaLabel}
-      className="flex flex-nowrap justify-between gap-1 sm:justify-start sm:gap-2"
+      className="flex flex-nowrap justify-start gap-1 sm:gap-2"
       role="group"
     >
       {selectAllLabel ? (
