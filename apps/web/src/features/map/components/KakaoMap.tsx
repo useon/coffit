@@ -171,36 +171,38 @@ export function KakaoMap() {
           />
         </div>
       </div>
-      {isSearchPending ? (
-        <div className="pointer-events-none absolute inset-x-0 top-28 z-10 flex justify-center px-4 sm:top-24">
+      <div className="pointer-events-none absolute inset-x-0 top-[calc(max(1rem,env(safe-area-inset-top))+clamp(1.75rem,8vw,2.25rem)+0.75rem)] z-10 px-4 sm:top-[4.5rem] sm:px-6">
+        {isSearchPending ? (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-coffit-brand px-4 py-2 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSearching}
+              onClick={searchCurrentArea}
+            >
+              <RotateCw aria-hidden="true" size={16} strokeWidth={2.5} />
+              현 위치에서 검색
+            </button>
+          </div>
+        ) : null}
+        <div className="absolute top-0 right-4 sm:right-6">
           <button
             type="button"
-            className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-coffit-brand px-4 py-2 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-            disabled={isSearching}
-            onClick={searchCurrentArea}
+            aria-label="현재 위치로 이동"
+            title="현재 위치로 이동"
+            className="pointer-events-auto grid size-11 place-items-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur transition-colors hover:bg-white hover:text-coffit-brand disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={!canFocusCurrentLocation}
+            onClick={() => {
+              if (!currentLocationPoint) {
+                return;
+              }
+
+              focusCurrentLocation(currentLocationPoint);
+            }}
           >
-            <RotateCw aria-hidden="true" size={16} strokeWidth={2.5} />
-            현 위치에서 검색
+            <Locate aria-hidden="true" size={20} strokeWidth={2.25} />
           </button>
         </div>
-      ) : null}
-      <div className="pointer-events-none absolute top-28 right-4 z-10 sm:top-24 sm:right-6">
-        <button
-          type="button"
-          aria-label="현재 위치로 이동"
-          title="현재 위치로 이동"
-          className="pointer-events-auto grid size-11 place-items-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur transition-colors hover:bg-white hover:text-coffit-brand disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={!canFocusCurrentLocation}
-          onClick={() => {
-            if (!currentLocationPoint) {
-              return;
-            }
-
-            focusCurrentLocation(currentLocationPoint);
-          }}
-        >
-          <Locate aria-hidden="true" size={20} strokeWidth={2.25} />
-        </button>
       </div>
     </main>
   );
