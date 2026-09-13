@@ -160,17 +160,8 @@ export function KakaoMap() {
         )}
       </BottomSheet>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
-        <div className="pointer-events-auto mx-auto flex max-w-3xl flex-col gap-3">
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-lg shadow-slate-900/10 backdrop-blur">
-            <span className="text-lg font-bold tracking-normal text-coffit-brand">
-              Coffit
-            </span>
-            <div className="h-5 w-px bg-slate-200" />
-            <p className="truncate text-sm font-medium text-slate-700">
-              주변 저가 프랜차이즈 카페
-            </p>
-          </div>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-4 pt-[max(1rem,env(safe-area-inset-top))] sm:px-6 sm:pt-6">
+        <div className="pointer-events-auto mx-auto max-w-3xl">
           <Chips
             ariaLabel="브랜드 필터"
             items={LOW_COST_COFFEE_BRANDS}
@@ -181,7 +172,7 @@ export function KakaoMap() {
         </div>
       </div>
       {isSearchPending ? (
-        <div className="pointer-events-none absolute inset-x-0 top-32 z-10 flex justify-center px-4 sm:top-36">
+        <div className="pointer-events-none absolute inset-x-0 top-28 z-10 flex justify-center px-4 sm:top-24">
           <button
             type="button"
             className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-coffit-brand px-4 py-2 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
@@ -193,7 +184,7 @@ export function KakaoMap() {
           </button>
         </div>
       ) : null}
-      <div className="pointer-events-none absolute top-44 right-4 z-10 sm:top-48 sm:right-6">
+      <div className="pointer-events-none absolute top-28 right-4 z-10 sm:top-24 sm:right-6">
         <button
           type="button"
           aria-label="현재 위치로 이동"
