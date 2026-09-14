@@ -10,6 +10,7 @@ export type KakaoLatLng = {
 export type KakaoMapInstance = {
   getCenter: () => KakaoLatLng;
   getLevel: () => number;
+  relayout: () => void;
   setCenter: (center: KakaoLatLng) => void;
 };
 

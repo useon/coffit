@@ -108,6 +108,17 @@ export function useKakaoMapRenderer(): MapRenderer & {
     );
   }, []);
 
+  const relayout = useCallback(() => {
+    const mapInstance = mapInstanceRef.current;
+    if (!mapInstance) {
+      return;
+    }
+
+    const center = mapInstance.getCenter();
+    mapInstance.relayout();
+    mapInstance.setCenter(center);
+  }, []);
+
   const onScriptReady = useCallback(() => {
     loadMapIfSdkReady();
   }, [loadMapIfSdkReady]);
@@ -121,6 +132,7 @@ export function useKakaoMapRenderer(): MapRenderer & {
     center,
     mapInstance,
     mount,
+    relayout,
     moveMapToPoint,
     getCenterPoint,
     sdkUrl: kakaoSdkUrl,

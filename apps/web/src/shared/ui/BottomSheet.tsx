@@ -23,7 +23,7 @@ export function BottomSheet({
 
   return (
     <section
-      className={`absolute inset-x-0 bottom-0 z-10 mx-auto flex max-w-3xl flex-col overflow-hidden rounded-t-2xl border border-b-0 border-slate-200 bg-white shadow-2xl shadow-slate-950/15 transition-[max-height] duration-200 ease-out ${expanded ? "max-h-[60dvh] sm:max-h-[48dvh] lg:max-h-[44dvh]" : "max-h-12"} ${className}`}
+      className={`z-10 mx-auto flex w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl border border-b-0 border-slate-200 bg-white shadow-2xl shadow-slate-950/15 transition-[max-height] duration-200 ease-out ${expanded ? "max-h-[60dvh] sm:max-h-[48dvh] lg:max-h-[44dvh]" : "max-h-12"} ${className}`}
     >
       <button
         type="button"
