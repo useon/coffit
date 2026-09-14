@@ -13,6 +13,7 @@ export function MapView({
   viewport: MapViewport;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { relayout } = renderer;
 
   useEffect(() => {
     if (containerRef.current) {
@@ -21,8 +22,23 @@ export function MapView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) {
+      return;
+    }
+
+    const observer = new ResizeObserver(relayout);
+
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [relayout]);
+
   return (
-    <div className="absolute inset-0">
+    <div className="relative row-start-1 min-h-0">
       <div ref={containerRef} className="absolute inset-0" />
     </div>
   );

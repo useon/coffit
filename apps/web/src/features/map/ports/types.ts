@@ -14,6 +14,7 @@ export interface MapRenderer {
   status: MapRendererStatus;
   center: GeoPoint | null;
   mount: (container: HTMLElement, viewport: MapViewport) => void;
+  relayout: () => void;
   moveMapToPoint: (targetPoint: GeoPoint) => void;
   getCenterPoint: () => GeoPoint | null;
 }

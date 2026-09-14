@@ -39,10 +39,8 @@ const DEFAULT_VIEWPORT: MapViewport = {
 export function KakaoMap() {
   const hasSearchedInitialAreaRef = useRef(false);
   const renderer = useKakaoMapRenderer();
-  const {
-    selectedBrandIds,
-    changeSelectedBrandIds,
-  } = useBrandFilterSearchParams();
+  const { selectedBrandIds, changeSelectedBrandIds } =
+    useBrandFilterSearchParams();
   const { cafeSearch, searchNearbyCafes } = useCafeSearch();
   const filteredCafePlaces = useMemo(
     () =>
@@ -71,14 +69,13 @@ export function KakaoMap() {
     },
     [moveMapToPoint, showCurrentLocationMarker],
   );
-  const { isSearchPending, isSearching, searchCurrentArea } =
-    useMapAreaSearch({
-      currentCenter: renderer.center,
-      searchedCenter: cafeSearch.center,
-      searchStatus: cafeSearch.status,
-      getCenterPoint: renderer.getCenterPoint,
-      searchNearbyCafes,
-    });
+  const { isSearchPending, isSearching, searchCurrentArea } = useMapAreaSearch({
+    currentCenter: renderer.center,
+    searchedCenter: cafeSearch.center,
+    searchStatus: cafeSearch.status,
+    getCenterPoint: renderer.getCenterPoint,
+    searchNearbyCafes,
+  });
   const handleSearchCurrentArea = useCallback(() => {
     showStoreList();
     searchCurrentArea();
@@ -140,7 +137,7 @@ export function KakaoMap() {
     searchNearbyCafes,
   ]);
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-slate-100 text-slate-950">
+    <main className="relative grid h-dvh grid-rows-[minmax(0,1fr)_auto] overflow-hidden text-slate-950">
       {renderer.sdkUrl ? (
         <Script
           src={renderer.sdkUrl}
@@ -162,6 +159,7 @@ export function KakaoMap() {
         open={filteredCafePlaces.length > 0}
         expanded={storeBottomSheet.isExpanded}
         onExpandedChange={storeBottomSheet.changeExpanded}
+        className="row-start-2"
       >
         {storeBottomSheet.mode === "detail" &&
         storeBottomSheet.selectedStore ? (
@@ -195,10 +193,10 @@ export function KakaoMap() {
               type="button"
               className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-coffit-brand px-4 py-2 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isSearching}
-                onClick={handleSearchCurrentArea}
+              onClick={handleSearchCurrentArea}
             >
-              <RotateCw aria-hidden="true" size={16} strokeWidth={2.5} />
-              현 위치에서 검색
+              <RotateCw aria-hidden="true" size={16} strokeWidth={2.5} />현
+              위치에서 검색
             </button>
           </div>
         ) : null}
