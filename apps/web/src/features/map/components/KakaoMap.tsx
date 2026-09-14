@@ -137,7 +137,7 @@ export function KakaoMap() {
     searchNearbyCafes,
   ]);
   return (
-    <main className="relative grid h-dvh grid-rows-[minmax(0,1fr)_auto] overflow-hidden text-slate-950">
+    <main className="relative grid h-dvh grid-rows-[minmax(0,1fr)_auto] overflow-hidden bg-white text-slate-950">
       {renderer.sdkUrl ? (
         <Script
           src={renderer.sdkUrl}
@@ -147,7 +147,9 @@ export function KakaoMap() {
         />
       ) : null}
 
-      <MapView renderer={renderer} viewport={DEFAULT_VIEWPORT} />
+      <div className="relative row-start-1 min-h-0 w-full lg:mx-auto lg:max-w-3xl">
+        <MapView renderer={renderer} viewport={DEFAULT_VIEWPORT} />
+      </div>
       {mapNotice ? (
         <Toast
           key={mapNotice.message}
@@ -175,8 +177,8 @@ export function KakaoMap() {
         )}
       </BottomSheet>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-4 pt-[max(1rem,env(safe-area-inset-top))] sm:px-6 sm:pt-6">
-        <div className="pointer-events-auto mx-auto max-w-3xl">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-6">
+        <div className="pointer-events-auto mx-auto w-full max-w-3xl px-[clamp(1rem,3vw,2rem)]">
           <Chips
             ariaLabel="브랜드 필터"
             items={LOW_COST_COFFEE_BRANDS}
@@ -186,7 +188,7 @@ export function KakaoMap() {
           />
         </div>
       </div>
-      <div className="pointer-events-none absolute inset-x-0 top-[calc(max(1rem,env(safe-area-inset-top))+clamp(1.75rem,8vw,2.25rem)+0.75rem)] z-10 px-4 sm:top-[4.5rem] sm:px-6">
+      <div className="pointer-events-none absolute inset-x-0 top-[calc(max(1rem,env(safe-area-inset-top))+clamp(1.75rem,8vw,2.25rem)+0.75rem)] z-10 sm:top-[4.5rem]">
         {isSearchPending ? (
           <div className="flex justify-center">
             <button
@@ -200,23 +202,25 @@ export function KakaoMap() {
             </button>
           </div>
         ) : null}
-        <div className="absolute top-0 right-4 sm:right-6">
-          <button
-            type="button"
-            aria-label="현재 위치로 이동"
-            title="현재 위치로 이동"
-            className="pointer-events-auto grid size-11 place-items-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur transition-colors hover:bg-white hover:text-coffit-brand disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={!canFocusCurrentLocation}
-            onClick={() => {
-              if (!currentLocationPoint) {
-                return;
-              }
+        <div className="relative mx-auto w-full max-w-3xl">
+          <div className="absolute top-0 right-[clamp(1rem,3vw,2rem)]">
+            <button
+              type="button"
+              aria-label="현재 위치로 이동"
+              title="현재 위치로 이동"
+              className="pointer-events-auto grid size-11 place-items-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur transition-colors hover:bg-white hover:text-coffit-brand disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={!canFocusCurrentLocation}
+              onClick={() => {
+                if (!currentLocationPoint) {
+                  return;
+                }
 
-              focusCurrentLocation(currentLocationPoint);
-            }}
-          >
-            <Locate aria-hidden="true" size={20} strokeWidth={2.25} />
-          </button>
+                focusCurrentLocation(currentLocationPoint);
+              }}
+            >
+              <Locate aria-hidden="true" size={20} strokeWidth={2.25} />
+            </button>
+          </div>
         </div>
       </div>
     </main>
