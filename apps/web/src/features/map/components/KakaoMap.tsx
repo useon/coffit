@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Locate, RotateCw } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 
 import { useCafeSearch } from "@/features/map/api/useCafeSearch";
@@ -23,8 +25,10 @@ import { Toast } from "@/shared/ui/Toast";
 
 import { CafeSearchResultList } from "./CafeSearchResultList";
 import { CafeStoreDetail } from "./CafeStoreDetail";
+import { LocationSearchField } from "./LocationSearchField";
 import { MapView } from "./MapView";
 import { useBrandFilterSearchParams } from "./useBrandFilterSearchParams";
+import { useLocationSearchParams } from "./useLocationSearchParams";
 import { useMapAreaSearch } from "./useMapAreaSearch";
 import { useStoreBottomSheet } from "./useStoreBottomSheet";
 
@@ -38,9 +42,12 @@ const DEFAULT_VIEWPORT: MapViewport = {
 
 export function KakaoMap() {
   const hasSearchedInitialAreaRef = useRef(false);
+  const appliedSelectedLocationRef = useRef<string | null>(null);
   const renderer = useKakaoMapRenderer();
+  const searchParams = useSearchParams();
   const { selectedBrandIds, changeSelectedBrandIds } =
     useBrandFilterSearchParams();
+  const { selectedLocation } = useLocationSearchParams();
   const { cafeSearch, searchNearbyCafes } = useCafeSearch();
   const filteredCafePlaces = useMemo(
     () =>
@@ -116,7 +123,8 @@ export function KakaoMap() {
     if (
       renderer.status !== "ready" ||
       isCurrentLocationLoading ||
-      hasSearchedInitialAreaRef.current
+      hasSearchedInitialAreaRef.current ||
+      selectedLocation
     ) {
       return;
     }
@@ -135,7 +143,34 @@ export function KakaoMap() {
     isCurrentLocationLoading,
     renderer.status,
     searchNearbyCafes,
+    selectedLocation,
   ]);
+  useEffect(() => {
+    if (renderer.status !== "ready" || !selectedLocation) {
+      return;
+    }
+
+    const selectedLocationKey = `${selectedLocation.position.latitude},${selectedLocation.position.longitude}`;
+    if (appliedSelectedLocationRef.current === selectedLocationKey) {
+      return;
+    }
+
+    appliedSelectedLocationRef.current = selectedLocationKey;
+    hasSearchedInitialAreaRef.current = true;
+    showStoreList();
+    moveMapToPoint(selectedLocation.position);
+    searchNearbyCafes(selectedLocation.position);
+  }, [
+    moveMapToPoint,
+    renderer.status,
+    searchNearbyCafes,
+    selectedLocation,
+    showStoreList,
+  ]);
+  const mapSearchQueryString = searchParams.toString();
+  const locationSearchHref = mapSearchQueryString
+    ? `/search?${mapSearchQueryString}`
+    : "/search";
   return (
     <main className="relative grid h-dvh grid-rows-[minmax(0,1fr)_auto] overflow-hidden bg-white text-slate-950">
       {renderer.sdkUrl ? (
@@ -177,18 +212,31 @@ export function KakaoMap() {
         )}
       </BottomSheet>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-6">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-6">
         <div className="pointer-events-auto mx-auto w-full max-w-3xl px-[clamp(1rem,3vw,2rem)]">
-          <Chips
-            ariaLabel="브랜드 필터"
-            items={LOW_COST_COFFEE_BRANDS}
-            selectedValues={selectedBrandIds}
-            onSelectedValuesChange={changeBrandFilter}
-            selectAllLabel="전체"
-          />
+          <Link
+            href={locationSearchHref}
+            aria-label="지역 검색으로 이동"
+            className="block"
+          >
+            <LocationSearchField>
+              <span className="text-sm font-medium text-slate-400">
+                역, 주소, 장소 검색
+              </span>
+            </LocationSearchField>
+          </Link>
+          <div className="mt-3">
+            <Chips
+              ariaLabel="브랜드 필터"
+              items={LOW_COST_COFFEE_BRANDS}
+              selectedValues={selectedBrandIds}
+              onSelectedValuesChange={changeBrandFilter}
+              selectAllLabel="전체"
+            />
+          </div>
         </div>
       </div>
-      <div className="pointer-events-none absolute inset-x-0 top-[calc(max(1rem,env(safe-area-inset-top))+clamp(1.75rem,8vw,2.25rem)+0.75rem)] z-10 sm:top-[4.5rem]">
+      <div className="pointer-events-none absolute inset-x-0 top-[calc(max(1rem,env(safe-area-inset-top))+7.5rem)] z-10 sm:top-[8rem]">
         {isSearchPending ? (
           <div className="flex justify-center">
             <button
