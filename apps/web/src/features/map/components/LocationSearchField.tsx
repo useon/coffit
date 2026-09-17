@@ -47,6 +47,7 @@ export function LocationSearchField({
         type="search"
         minLength={2}
         autoFocus
+        autoComplete="off"
         value={query}
         onChange={(event) => {
           setQuery(event.target.value);
