@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,21 +13,11 @@ import type { LocationCandidate } from "@/features/map/domain/types";
 export function LocationSearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState("");
   const [locations, setLocations] = useState<LocationCandidate[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const mapQueryString = searchParams.toString();
   const mapHref = mapQueryString ? `/?${mapQueryString}` : "/";
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const keyword = query.trim();
-    if (keyword.length < 2) {
-      return;
-    }
-
-    setIsSearching(true);
+  const searchLocations = async (keyword: string) => {
     setLocations([]);
 
     try {
@@ -35,8 +25,6 @@ export function LocationSearchPage() {
       setLocations(nextLocations);
     } catch {
       setLocations([]);
-    } finally {
-      setIsSearching(false);
     }
   };
 
@@ -59,32 +47,9 @@ export function LocationSearchPage() {
         >
           <ArrowLeft aria-hidden="true" className="size-5" />
         </Link>
-        <form className="min-w-0 flex-1" onSubmit={handleSubmit}>
-          <LocationSearchField>
-            <label className="sr-only" htmlFor="location-search">
-              장소 검색
-            </label>
-            <input
-              id="location-search"
-              type="search"
-              minLength={2}
-              autoFocus
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-              }}
-              placeholder="역, 주소, 장소 검색"
-              className="min-w-0 flex-1 bg-transparent text-base font-medium text-slate-950 outline-none placeholder:text-slate-400"
-            />
-            <button
-              type="submit"
-              disabled={isSearching}
-              className="ml-2 rounded-lg bg-coffit-brand px-3 py-1.5 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              검색
-            </button>
-          </LocationSearchField>
-        </form>
+        <div className="min-w-0 flex-1">
+          <LocationSearchField onSearch={searchLocations} />
+        </div>
       </header>
 
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-5 sm:px-6">

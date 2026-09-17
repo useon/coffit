@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { Locate, RotateCw } from "lucide-react";
+import { Locate, RotateCw, Search } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
@@ -25,7 +25,6 @@ import { Toast } from "@/shared/ui/Toast";
 
 import { CafeSearchResultList } from "./CafeSearchResultList";
 import { CafeStoreDetail } from "./CafeStoreDetail";
-import { LocationSearchField } from "./LocationSearchField";
 import { MapView } from "./MapView";
 import { useBrandFilterSearchParams } from "./useBrandFilterSearchParams";
 import { useLocationSearchParams } from "./useLocationSearchParams";
@@ -217,13 +216,15 @@ export function KakaoMap() {
           <Link
             href={locationSearchHref}
             aria-label="지역 검색으로 이동"
-            className="block"
+            className="flex h-12 items-center rounded-xl border border-slate-200 bg-white px-3 shadow-sm transition-colors hover:bg-slate-50"
           >
-            <LocationSearchField>
-              <span className="text-sm font-medium text-slate-400">
-                역, 주소, 장소 검색
-              </span>
-            </LocationSearchField>
+            <Search
+              aria-hidden="true"
+              className="mr-2 size-5 shrink-0 text-slate-400"
+            />
+            <span className="text-sm font-medium text-slate-400">
+              역, 주소, 장소 검색
+            </span>
           </Link>
           <div className="mt-3">
             <Chips
