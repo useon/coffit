@@ -43,8 +43,6 @@ export class CafePlaceDto {
   categoryName!: string;
 }
 
-export type KakaoCafePlace = Omit<CafePlaceDto, "brandId" | "brandName">;
-
 export class SearchCafesResponseDto {
   @ApiProperty({ type: [CafePlaceDto] })
   places!: CafePlaceDto[];

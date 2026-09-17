@@ -1,9 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { KakaoLocalClient } from "./clients/kakao-local.client";
+import {
+  KakaoCafePlace,
+  KakaoLocalClient,
+} from "../shared/kakao-local/kakao-local.client";
 import { SearchCafesQueryDto } from "./dto/search-cafes-query.dto";
 import {
   CafePlaceDto,
-  KakaoCafePlace,
   SearchCafesResponseDto,
 } from "./dto/search-cafes-response.dto";
 import { findLowCostCoffeeBrand } from "./domain/low-cost-coffee-brands";

@@ -22,7 +22,7 @@ Coffit API는 HTTP 계약, 애플리케이션 흐름, 외부 provider 연동, �
 ## 현재 카페 검색 API의 기준
 
 - `apps/api/src/cafes/cafes.controller.ts`의 `CafesController`는 HTTP 입력을 받고 `CafesService`를 호출하는 역할만 담당한다.
-- `apps/api/src/cafes/clients/kakao-local.client.ts`가 Kakao Local API 호출과 provider 응답 변환을 담당한다.
+- `apps/api/src/shared/kakao-local/kakao-local.client.ts`가 카페·장소 검색에서 공통으로 사용하는 Kakao Local API 호출과 provider 응답 변환을 담당한다.
 - `apps/api/src/cafes/domain/low-cost-coffee-brands.ts`가 저가 커피 브랜드 목록과 alias 판별의 단일 기준이다.
 - 카페 검색 결과의 거리 정렬과 브랜드 필터링은 `CafesService`의 검색 흐름에서 수행한다.
 

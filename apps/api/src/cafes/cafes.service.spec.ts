@@ -1,6 +1,8 @@
 import { CafesService } from "./cafes.service";
-import { KakaoLocalClient } from "./clients/kakao-local.client";
-import { KakaoCafePlace } from "./dto/search-cafes-response.dto";
+import {
+  KakaoCafePlace,
+  KakaoLocalClient,
+} from "../shared/kakao-local/kakao-local.client";
 
 describe("카페 검색 서비스", () => {
   it("저가커피 브랜드 카페만 브랜드 정보를 붙여 거리순으로 반환한다", async () => {
