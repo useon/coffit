@@ -20,3 +20,12 @@ export type CafePlace = {
   placeUrl: string;
   categoryName: string;
 };
+
+export type LocationCandidate = {
+  id: string;
+  name: string;
+  position: GeoPoint;
+  address: string;
+  roadAddress: string;
+  categoryName: string;
+};
